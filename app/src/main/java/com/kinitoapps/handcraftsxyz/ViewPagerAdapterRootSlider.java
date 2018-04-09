@@ -14,13 +14,13 @@ import android.widget.ImageView;
  * Created by HP INDIA on 04-Apr-18.
  */
 
-public class ViewPagerAdapter extends PagerAdapter {
+public class ViewPagerAdapterRootSlider extends PagerAdapter {
 
     private Context context;
     private LayoutInflater layoutInflater;
     private Integer [] images = {R.drawable.slide_one,R.drawable.slide_two,R.drawable.slide_three,R.drawable.slide_four,R.drawable.slide_five};
 
-    public ViewPagerAdapter(Context context){
+    public ViewPagerAdapterRootSlider(Context context){
         this.context = context;
     }
 
