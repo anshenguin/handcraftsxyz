@@ -1,6 +1,8 @@
 package com.kinitoapps.handcraftsxyz;
 
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -15,6 +17,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -31,25 +34,17 @@ import me.relex.circleindicator.CircleIndicator;
 import static com.bumptech.glide.Glide.with;
 
 public class RootActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
-    GridRecyclerViewAdapter adapter;
-    private static final String URL_PRODUCTS ="http://handicraft-com.stackstaging.com/myapi/api.php";
-    ImageView tile1,tile2,tile3,tile4;
+        implements NavigationView.OnNavigationItemSelectedListener, Home.OnFragmentInteractionListener,shop_by_category.OnFragmentInteractionListener{
+//    private static final String URL_PRODUCTS ="http://handicraft-com.stackstaging.com/myapi/api.php";
+//    ImageView tile1,tile2,tile3,tile4,tile5,tile6,tile7,tile8;
+    int selected;
+    boolean mDrawerItemClicked = false;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_root);
-        ViewPager viewPager = findViewById(R.id.viewpager);
-        ViewPagerAdapterRootSlider viewPagerAdapter = new ViewPagerAdapterRootSlider(this);
-        tile1 = findViewById(R.id.tile_image1);
-        tile2 = findViewById(R.id.tile_image2);
-        tile3 = findViewById(R.id.tile_image3);
-        tile4 = findViewById(R.id.tile_image4);
-        CircleIndicator indicator = (CircleIndicator) findViewById(R.id.indicator);
-        viewPager.setAdapter(viewPagerAdapter);
-        indicator.setViewPager(viewPager);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -63,7 +58,80 @@ public class RootActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        loadProducts();
+        android.support.v4.app.Fragment fragment = null;
+        Class fragmentClass = null;
+        fragmentClass = Home.class;
+        try {
+            fragment = (android.support.v4.app.Fragment) fragmentClass.newInstance();
+            selected = 1;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager.beginTransaction().replace(R.id.main_content, fragment).commit();
+        drawer.addDrawerListener(new DrawerLayout.DrawerListener() {
+            @Override
+            public void onDrawerSlide(View drawerView, float slideOffset) {
+
+            }
+
+            @Override
+            public void onDrawerOpened(View drawerView) {
+
+            }
+
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                android.support.v4.app.Fragment fragment = null;
+                Class fragmentClass = null;
+
+                if(mDrawerItemClicked){
+                    if(selected == 1){
+                        fragmentClass = Home.class;
+                        try {
+                            fragment = (android.support.v4.app.Fragment) fragmentClass.newInstance();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        FragmentManager fragmentManager = getSupportFragmentManager();
+
+                        fragmentManager.beginTransaction().replace(R.id.main_content, fragment).commit();
+                    }
+                    else if(selected == 2){
+                        fragmentClass = shop_by_category.class;
+                        try {
+                            fragment = (android.support.v4.app.Fragment) fragmentClass.newInstance();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        FragmentManager fragmentManager = getSupportFragmentManager();
+                        fragmentManager.beginTransaction().replace(R.id.main_content, fragment).commit();
+                    }
+
+                    mDrawerItemClicked = false;
+                }
+            }
+
+            @Override
+            public void onDrawerStateChanged(int newState) {
+
+            }
+        });
+//        ViewPager viewPager = findViewById(R.id.viewpager);
+//        ViewPagerAdapterRootSlider viewPagerAdapter = new ViewPagerAdapterRootSlider(this);
+//        tile1 = findViewById(R.id.tile_image1);
+//        tile2 = findViewById(R.id.tile_image2);
+//        tile3 = findViewById(R.id.tile_image3);
+//        tile4 = findViewById(R.id.tile_image4);
+//        tile5 = findViewById(R.id.tile_image5);
+//        tile6 = findViewById(R.id.tile_image6);
+//        tile7 = findViewById(R.id.tile_image7);
+//        tile8 = findViewById(R.id.tile_image8);
+//        CircleIndicator indicator = (CircleIndicator) findViewById(R.id.indicator);
+//        viewPager.setAdapter(viewPagerAdapter);
+//        indicator.setViewPager(viewPager);
+
+
     }
 
     @Override
@@ -104,19 +172,21 @@ public class RootActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
+        if (id == R.id.nav_home) {
+            selected = 1;
+        } else if (id == R.id.nav_categories) {
+            selected = 2;
+        } else if (id == R.id.nav_newarrivals) {
+            selected = 3;
         }
+        mDrawerItemClicked = true;
+
+//
+//        } else if (id == R.id.nav_share) {
+//
+//        } else if (id == R.id.nav_send) {
+//
+//        }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -124,79 +194,8 @@ public class RootActivity extends AppCompatActivity
     }
 
 
-    private void loadProducts() {
+    @Override
+    public void onFragmentInteraction(Uri uri) {
 
-        /*
-        * Creating a String Request
-        * The request type is GET defined by first parameter
-        * The URL is defined in the second parameter
-        * Then we have a Response Listener and a Error Listener
-        * In response listener we will get the JSON response as a String
-        * */
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, URL_PRODUCTS,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        try {
-                            //converting the string to json array object
-                            JSONArray array = new JSONArray(response);
-
-                            //traversing through all the object
-                            for (int i = 0; i < 4; i++) {
-
-                                //getting product object from json array
-                                JSONObject product = array.getJSONObject(i);
-
-                                //adding the product to product list
-
-                                        String imgLink = product.getString("image");
-//                                        String name = product.getString("productName");
-//                                        double price = product.getDouble("price");
-                                        switch (i){
-                                            case 0:
-                                                with(RootActivity.this)
-                                                        .load(imgLink)
-                                                        .into(tile1);
-                                                break;
-                                            case 1:
-                                                with(RootActivity.this)
-                                                        .load(imgLink)
-                                                        .into(tile2);
-                                                break;
-                                            case 2:
-                                                with(RootActivity.this)
-                                                        .load(imgLink)
-                                                        .into(tile3);
-                                                break;
-                                            default:
-                                                with(RootActivity.this)
-                                                        .load(imgLink)
-                                                        .into(tile4);
-                                                break;
-
-
-                                        }
-
-
-
-                            }
-
-                            //creating adapter object and setting it to recyclerview
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-
-                    }
-                });
-
-        //adding our stringrequest to queue
-        Volley.newRequestQueue(this).add(stringRequest);
     }
-
 }
