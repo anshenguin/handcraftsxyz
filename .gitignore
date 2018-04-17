@@ -83,6 +83,7 @@ $RECYCLE.BIN/
 # Windows Installer files
 *.cab
 *.msi
+.idea/workspace.xml
 *.msm
 *.msp
 
