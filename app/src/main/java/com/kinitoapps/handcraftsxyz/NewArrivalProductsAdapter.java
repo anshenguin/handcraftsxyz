@@ -1,6 +1,7 @@
 package com.kinitoapps.handcraftsxyz;
 
 import android.content.Context;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,10 +20,12 @@ public class NewArrivalProductsAdapter extends RecyclerView.Adapter<NewArrivalPr
 
     private Context mCtx;
     private List<Product> productList;
+    RootActivity activity;
 
     public NewArrivalProductsAdapter(Context mCtx, List<Product> productList) {
         this.mCtx = mCtx;
         this.productList = productList;
+        activity = (RootActivity) mCtx;
     }
 
 
@@ -48,6 +51,24 @@ public class NewArrivalProductsAdapter extends RecyclerView.Adapter<NewArrivalPr
 
         holder.textViewTitle.setText(product.getProductName());
 
+        holder.imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                view.setPadding(24,24,24,24);
+                android.support.v4.app.Fragment fragment = null;
+                Class fragmentClass = null;
+                fragmentClass = ProductPageFragment.class;
+                try {
+                    fragment = (android.support.v4.app.Fragment) fragmentClass.newInstance();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                //ERROR
+                FragmentManager fragmentManager = activity.getSupportFragmentManager();
+                fragmentManager.beginTransaction().replace(R.id.main_content, fragment).commit();
+            }
+        });
+
 //        holder.textViewPrice.setText(String.valueOf(product.getPrice()));
     }
 
@@ -65,20 +86,8 @@ public class NewArrivalProductsAdapter extends RecyclerView.Adapter<NewArrivalPr
             super(itemView);
 
             textViewTitle = itemView.findViewById(R.id.textViewTitle);
-            textViewTitle.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    itemView.setPadding(24,24,24,24);
-                }
-            });
 //            textViewPrice = itemView.findViewById(R.id.textViewPrice);
             imageView = itemView.findViewById(R.id.imageView);
-            imageView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    itemView.setPadding(24,24,24,24);
-                }
-            });
         }
     }
 }

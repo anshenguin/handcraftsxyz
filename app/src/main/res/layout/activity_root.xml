@@ -23,7 +23,7 @@
         app:itemTextColor="@android:color/black"
         app:itemTextAppearance="?android:attr/textAppearanceMedium"
         app:theme="@style/NavigationDrawerStyle"
-        app:menu="@menu/activity_root_drawer" >
+        app:menu="@menu/activity_root_drawer">
 
         <android.support.v4.widget.NestedScrollView
             android:layout_width="match_parent"

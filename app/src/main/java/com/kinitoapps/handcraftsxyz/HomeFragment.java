@@ -11,7 +11,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -28,7 +27,6 @@ import java.util.List;
 
 import me.relex.circleindicator.CircleIndicator;
 
-import static com.bumptech.glide.Glide.get;
 import static com.bumptech.glide.Glide.with;
 
 
@@ -52,7 +50,11 @@ public class HomeFragment extends Fragment {
     RecyclerView.LayoutManager recyclerViewLayoutManager;
     List<Product> productList;
     RecyclerView recyclerView;
+    List<String> sliderImageLinks;
     RecyclerView.Adapter recyclerView_Adapter;
+    CircleIndicator indicator;
+    ViewPagerAdapterRootSlider viewPagerAdapter;
+    ViewPager viewPager;
 
 
     private OnFragmentInteractionListener mListener;
@@ -60,8 +62,8 @@ public class HomeFragment extends Fragment {
     public HomeFragment() {
         // Required empty public constructor
     }
-    ImageView tile1,tile2,tile3,tile4,tile5,tile6,tile7,tile8;
-    private static final String URL_PRODUCTS ="http://handicraft-com.stackstaging.com/myapi/api.php";
+        private static final String URL_PRODUCTS ="http://handicraft-com.stackstaging.com/myapi/api.php";
+    private static final String URL_SLIDER_IMAGES = "http://handicraft-com.stackstaging.com/myapi/api_for_slidebar.php";
 
 
     /**
@@ -95,10 +97,11 @@ public class HomeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_home_2, container, false);
-        ViewPager viewPager = view.findViewById(R.id.viewpager);
+        View view = inflater.inflate(R.layout.fragment_home, container, false);
+        viewPager = view.findViewById(R.id.viewpager);
         recyclerView = view.findViewById(R.id.recyclerView);
         productList = new ArrayList<>();
+        sliderImageLinks = new ArrayList<>();
         recyclerViewLayoutManager = new GridLayoutManager(getActivity(), 2);
         recyclerView.setOnFlingListener(new RecyclerView.OnFlingListener() {
             @Override
@@ -113,77 +116,50 @@ public class HomeFragment extends Fragment {
         recyclerView_Adapter = new NewArrivalProductsAdapter(getActivity(),productList);
 
         recyclerView.setAdapter(recyclerView_Adapter);
-        ViewPagerAdapterRootSlider viewPagerAdapter = new ViewPagerAdapterRootSlider(getActivity());
-//        tile1 = view.findViewById(R.id.tile_image1);
-//        tile2 = view.findViewById(R.id.tile_image2);
-//        tile3 = view.findViewById(R.id.tile_image3);
-//        tile4 = view.findViewById(R.id.tile_image4);
-//        tile5 = view.findViewById(R.id.tile_image5);
-//        tile6 = view.findViewById(R.id.tile_image6);
-//        tile7 = view.findViewById(R.id.tile_image7);
-//        tile8 = view.findViewById(R.id.tile_image8);
-        CircleIndicator indicator = view.findViewById(R.id.indicator);
-        viewPager.setAdapter(viewPagerAdapter);
-        indicator.setViewPager(viewPager);
-//        tile1.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                view.setPadding(24,24,24,24);
-//            }
-//        });
-//        tile2.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                view.setPadding(24,24,24,24);
-//
-//            }
-//        });
-//        tile3.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                view.setPadding(24,24,24,24);
-//
-//            }
-//        });
-//        tile4.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                view.setPadding(24,24,24,24);
-//
-//            }
-//        });
-//        tile5.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                view.setPadding(24,24,24,24);
-//
-//            }
-//        });
-//        tile6.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                view.setPadding(24,24,24,24);
-//
-//            }
-//        });
-//        tile7.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                view.setPadding(24,24,24,24);
-//
-//            }
-//        });
-//        tile8.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                view.setPadding(24,24,24,24);
-//
-//            }
-//        });
+        loadSliderImages();
+        indicator = view.findViewById(R.id.indicator);
+
         loadProducts();
 
         return view;
     }
+
+    private void loadSliderImages() {
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, URL_SLIDER_IMAGES,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+                            //converting the string to json array object
+                            JSONArray array = new JSONArray(response);
+
+                            //traversing through all the object
+                            for (int i = 0; i < array.length(); i++) {
+
+                                //getting product object from json array
+                                JSONObject sliderImageLink = array.getJSONObject(i);
+
+                                sliderImageLinks.add(sliderImageLink.getString("images"));
+                            }
+                            viewPagerAdapter = new ViewPagerAdapterRootSlider(getActivity(),sliderImageLinks);
+                            viewPager.setAdapter(viewPagerAdapter);
+                            indicator.setViewPager(viewPager);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                    }
+                });
+
+        //adding our stringrequest to queue
+        Volley.newRequestQueue(getActivity()).add(stringRequest);
+    }
+
     private void loadProducts() {
 
         /*
@@ -217,11 +193,8 @@ public class HomeFragment extends Fragment {
                                 ));
                             }
 
-                            //creating adapter object and setting it to recyclerview
                             NewArrivalProductsAdapter adapter = new NewArrivalProductsAdapter(getActivity(), productList);
                             recyclerView.setAdapter(adapter);
-//                            mAdapter.notifyDataSetChanged();
-
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }

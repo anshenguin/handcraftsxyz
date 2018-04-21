@@ -1,0 +1,147 @@
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context="com.kinitoapps.handcraftsxyz.ProductPageFragment">
+
+    <!-- TODO: Update blank fragment layout -->
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="60dp">
+
+            <android.support.v4.view.ViewPager
+                android:id="@+id/viewpager"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                app:layout_constraintDimensionRatio="H,1:1" />
+
+            <!--
+            TODO: Add a view to display swipe left-right actions
+            for viewpager -->
+
+            <TextView
+                android:id="@+id/productName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:padding="4dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginTop="8dp"
+                android:text="Explosion Box 6x6 for happy times, Lorem Ipsum Dolor sit amer"
+                android:textSize="18sp"
+                app:layout_constraintTop_toBottomOf="@id/viewpager" />
+
+            <TextView
+                android:id="@+id/sellerName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginTop="8dp"
+                android:text="by SapphireStore"
+                android:padding="4dp"
+                app:layout_constraintEnd_toStartOf="@+id/productStars"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintHorizontal_chainStyle="spread"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/productName" />
+
+            <TextView
+                android:id="@+id/productStars"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="8dp"
+                android:layout_marginTop="8dp"
+                android:text="4.3 ★ (24)"
+                android:padding="4dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/sellerName"
+                app:layout_constraintTop_toBottomOf="@+id/productName" />
+
+            <TextView
+                android:id="@+id/productPrice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="8dp"
+                android:text="₹ 14,000"
+                android:textSize="28sp"
+                android:padding="4dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/sellerName" />
+
+            <!-- TODO: Add missing layout here -->
+
+            <TextView
+                android:id="@+id/about_product_head_t"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:layout_marginTop="16dp"
+                android:text="ABOUT PRODUCT"
+                android:textStyle="bold"
+                android:layout_marginLeft="8dp"
+                android:padding="4dp"
+                android:textSize="16sp"
+                app:layout_constraintEnd_toStartOf="@+id/about_product_head_i"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+
+                app:layout_constraintTop_toBottomOf="@id/productPrice" />
+
+            <ImageView
+                android:id="@+id/about_product_head_i"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                app:layout_constraintBottom_toTopOf="@id/productAbout"
+                android:layout_marginTop="16dp"
+                android:padding="4dp"
+                android:src="@drawable/ic_chevron_right_black_24dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/about_product_head_t"
+                app:layout_constraintTop_toBottomOf="@id/productPrice" />
+
+            <TextView
+                android:id="@+id/productAbout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:layout_marginTop="8dp"
+                android:paddingLeft="8dp"
+                android:visibility="gone"
+                android:paddingRight="8dp"
+                android:text="description description description description description description description description description.
+
+Description, description lorem ipsum dolor sit amer."
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/about_product_head_t" />
+
+
+        </android.support.constraint.ConstraintLayout>
+
+    </android.support.v4.widget.NestedScrollView>
+
+    <TextView
+        android:layout_width="match_parent"
+        app:layout_constraintBottom_toTopOf="parent"
+        android:background="#EEA00FF0"
+        android:text="BUY NOW"
+        android:gravity="center"
+        android:textStyle="bold"
+        android:textColor="#FFF"
+        android:textSize="24sp"
+        android:layout_height="52dp"/>
+
+
+</android.support.constraint.ConstraintLayout>
