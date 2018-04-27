@@ -13,6 +13,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import static com.bumptech.glide.Glide.with;
 
@@ -77,7 +78,7 @@ ProductPageFragment.OnFragmentInteractionListener{
             e.printStackTrace();
         }
         FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.main_content, fragment).commit();
+        fragmentManager.beginTransaction().replace(R.id.main_content, fragment,"homeFragment").addToBackStack("homeFragment").commit();
         drawer.addDrawerListener(new DrawerLayout.DrawerListener() {
             @Override
             public void onDrawerSlide(View drawerView, float slideOffset) {
@@ -114,7 +115,7 @@ ProductPageFragment.OnFragmentInteractionListener{
                             e.printStackTrace();
                         }
                         FragmentManager fragmentManager = getSupportFragmentManager();
-                        fragmentManager.beginTransaction().setCustomAnimations(R.anim.enter_from_left,R.anim.exit_to_left).replace(R.id.main_content, fragment).commit();
+                        fragmentManager.beginTransaction().setCustomAnimations(R.anim.enter_from_left,R.anim.exit_to_left).replace(R.id.main_content, fragment, "shopByCategory").addToBackStack("shopByCategory").commit();
                     }
 
                     mDrawerItemClicked = false;
@@ -143,13 +144,25 @@ ProductPageFragment.OnFragmentInteractionListener{
 
     }
 
+
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            HomeFragment myFragment = (HomeFragment) getSupportFragmentManager().findFragmentByTag("homeFragment");
+            if(myFragment != null && myFragment.isVisible()){
+                finish();
+            }
+            else {
+                if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+                    getSupportFragmentManager().popBackStack();
+                }
+                else
+                    finish();
+            }
+
         }
     }
 

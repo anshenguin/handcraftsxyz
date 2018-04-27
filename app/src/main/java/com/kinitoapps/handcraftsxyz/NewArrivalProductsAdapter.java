@@ -65,7 +65,7 @@ public class NewArrivalProductsAdapter extends RecyclerView.Adapter<NewArrivalPr
                 }
                 //ERROR
                 FragmentManager fragmentManager = activity.getSupportFragmentManager();
-                fragmentManager.beginTransaction().replace(R.id.main_content, fragment).commit();
+                fragmentManager.beginTransaction().replace(R.id.main_content, fragment, "productPage").addToBackStack("productPage").commit();
             }
         });
 

@@ -84,17 +84,17 @@
                 android:id="@+id/about_product_head_t"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
                 android:layout_marginTop="16dp"
-                android:text="ABOUT PRODUCT"
-                android:textStyle="bold"
-                android:layout_marginLeft="8dp"
                 android:padding="4dp"
+                android:text="ABOUT PRODUCT"
                 android:textSize="16sp"
+
+                android:layout_marginLeft="8dp"
+                android:textStyle="bold"
                 app:layout_constraintEnd_toStartOf="@+id/about_product_head_i"
                 app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toStartOf="parent"
 
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/productPrice" />
 
             <ImageView
@@ -102,7 +102,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
-                app:layout_constraintBottom_toTopOf="@id/productAbout"
                 android:layout_marginTop="16dp"
                 android:padding="4dp"
                 android:src="@drawable/ic_chevron_right_black_24dp"
@@ -116,16 +115,59 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
-                android:layout_marginTop="8dp"
                 android:paddingLeft="8dp"
                 android:visibility="gone"
                 android:paddingRight="8dp"
+                android:layout_marginTop="8dp"
                 android:text="description description description description description description description description description.
 
 Description, description lorem ipsum dolor sit amer."
                 android:textSize="16sp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/about_product_head_t" />
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/about_product_head_t"
+                app:layout_constraintVertical_bias="0.0" />
+
+            <TextView
+                android:id="@+id/reviews_head_t"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:padding="4dp"
+                android:layout_marginLeft="8dp"
+                android:text="REVIEWS"
+                android:textSize="16sp"
+                android:layout_marginTop="8dp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toStartOf="@+id/reviews_head_i"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/productAbout" />
+
+            <ImageView
+                android:id="@+id/reviews_head_i"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="4dp"
+                android:layout_marginTop="8dp"
+                android:src="@drawable/ic_chevron_right_black_24dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/reviews_head_t"
+                app:layout_constraintTop_toBottomOf="@id/productAbout" />
+
+            <ImageView
+                android:id="@+id/productReviews"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scaleType="centerCrop"
+                android:src="@drawable/layout_comin_soon"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/reviews_head_t"
+                app:layout_constraintVertical_bias="1.0" />
 
 
         </android.support.constraint.ConstraintLayout>
@@ -142,6 +184,8 @@ Description, description lorem ipsum dolor sit amer."
         android:textColor="#FFF"
         android:textSize="24sp"
         android:layout_height="52dp"/>
+
+
 
 
 </android.support.constraint.ConstraintLayout>
