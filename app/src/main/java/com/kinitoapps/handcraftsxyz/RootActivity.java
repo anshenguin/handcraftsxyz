@@ -19,7 +19,7 @@ import static com.bumptech.glide.Glide.with;
 
 public class RootActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, HomeFragment.OnFragmentInteractionListener,shop_by_categoryFragment.OnFragmentInteractionListener,
-ProductPageFragment.OnFragmentInteractionListener{
+ProductPageFragment.OnFragmentInteractionListener, StorePageFragment.OnFragmentInteractionListener{
 //    private static final String URL_PRODUCTS ="http://handicraft-com.stackstaging.com/myapi/api.php";
 //    ImageView tile1,tile2,tile3,tile4,tile5,tile6,tile7,tile8;
     int selected;

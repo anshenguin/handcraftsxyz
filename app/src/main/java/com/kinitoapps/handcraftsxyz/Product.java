@@ -9,16 +9,36 @@ public class Product {
     private String productName;
     private double price;
     private String image;
+    private String sellerName;
+    private String productID;
 
-    public Product(int id,String image,String productName,double price) {
+    public Product(int id,String image,String productName,double price, String sellerName, String productID) {
         this.id = id;
         this.productName=productName;
         this.price = price;
         this.image = image;
+        this.sellerName = sellerName;
+        this.productID = productID;
     }
 
     public int getId() {
         return id;
+    }
+
+    public String getSellerName() {
+        return sellerName;
+    }
+
+    public void setSellerName(String sellerName) {
+        this.sellerName = sellerName;
+    }
+
+    public String getProductID() {
+        return productID;
+    }
+
+    public void setProductID(String productID) {
+        this.productID = productID;
     }
 
     public void setId(int id) {

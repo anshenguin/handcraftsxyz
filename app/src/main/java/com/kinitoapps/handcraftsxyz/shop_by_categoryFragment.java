@@ -4,9 +4,25 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
+
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -22,6 +38,11 @@ public class shop_by_categoryFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    RecyclerView recyclerView;
+    RecyclerView.Adapter adapter;
+    List<String> categoryList;
+    private static final String URL_CATEGORIES = "http://handicraft-com.stackstaging.com/myapi/api_categories.php";
+
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -58,13 +79,60 @@ public class shop_by_categoryFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_shop_by_category, container, false);
+        View root = inflater.inflate(R.layout.fragment_shop_by_category, container, false);
+        recyclerView = root.findViewById(R.id.categories_recycler_view);
+        categoryList = new ArrayList<>();
+        LinearLayoutManager mLayoutManager = new LinearLayoutManager(getContext());
+        recyclerView.setLayoutManager(mLayoutManager);
+        adapter = new CategoryListAdapter(getActivity(),categoryList);
+        recyclerView.setAdapter(adapter);
+        loadCategories();
+        return root;
+    }
+
+    private void loadCategories() {
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, URL_CATEGORIES,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+                            //converting the string to json array object
+                            JSONArray array = new JSONArray(response);
+
+                            //traversing through all the object
+                            for (int i = 0; i < array.length(); i++) {
+
+                                //getting product object from json array
+                                JSONObject cat = array.getJSONObject(i);
+
+                                //adding the product to product list
+                                categoryList.add(cat.getString("category"));
+                            }
+
+                            CategoryListAdapter adapter = new CategoryListAdapter(getActivity(), categoryList);
+                            recyclerView.setAdapter(adapter);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                    }
+                });
+
+        //adding our stringrequest to queue
+        Volley.newRequestQueue(getActivity()).add(stringRequest);
     }
 
     // TODO: Rename method, update argument and hook method into UI event

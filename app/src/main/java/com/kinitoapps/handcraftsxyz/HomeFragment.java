@@ -62,8 +62,8 @@ public class HomeFragment extends Fragment {
     public HomeFragment() {
         // Required empty public constructor
     }
-        private static final String URL_PRODUCTS ="http://handicraft-com.stackstaging.com/myapi/api.php";
-    private static final String URL_SLIDER_IMAGES = "http://handicraft-com.stackstaging.com/myapi/api_for_slidebar.php";
+        private static final String URL_PRODUCTS ="http://handicraft-com.stackstaging.com/myapi/api_all_products.php";
+        private static final String URL_SLIDER_IMAGES = "http://handicraft-com.stackstaging.com/myapi/api_for_slidebar.php";
 
 
     /**
@@ -112,15 +112,11 @@ public class HomeFragment extends Fragment {
         });
 
         recyclerView.setLayoutManager(recyclerViewLayoutManager);
-
         recyclerView_Adapter = new NewArrivalProductsAdapter(getActivity(),productList);
-
         recyclerView.setAdapter(recyclerView_Adapter);
         loadSliderImages();
         indicator = view.findViewById(R.id.indicator);
-
         loadProducts();
-
         return view;
     }
 
@@ -186,9 +182,11 @@ public class HomeFragment extends Fragment {
                                 //adding the product to product list
                                 productList.add(new Product(
                                         product.getInt("id"),
-                                        product.getString("image"),
+                                        product.getString("primaryImage"),
                                         product.getString("productName"),
-                                        product.getDouble("price")
+                                        product.getDouble("price"),
+                                        product.getString("sellerName"),
+                                        product.getString("productID")
 
                                 ));
                             }

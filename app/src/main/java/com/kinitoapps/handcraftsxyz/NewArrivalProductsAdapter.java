@@ -1,6 +1,7 @@
 package com.kinitoapps.handcraftsxyz;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -36,13 +37,12 @@ public class NewArrivalProductsAdapter extends RecyclerView.Adapter<NewArrivalPr
     public NewArrivalProductsAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(mCtx);
         View view = inflater.inflate(R.layout.product_layout, null);
-
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(NewArrivalProductsAdapter.ViewHolder holder, int position) {
-        Product product = productList.get(position);
+        final Product product = productList.get(position);
 
         //loading the image
         Glide.with(mCtx)
@@ -50,6 +50,8 @@ public class NewArrivalProductsAdapter extends RecyclerView.Adapter<NewArrivalPr
                 .into(holder.imageView);
 
         holder.textViewTitle.setText(product.getProductName());
+        holder.textViewBy.setText(product.getSellerName());
+        holder.textViewPrice.setText(String.valueOf(product.getPrice()));
 
         holder.imageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -60,6 +62,9 @@ public class NewArrivalProductsAdapter extends RecyclerView.Adapter<NewArrivalPr
                 fragmentClass = ProductPageFragment.class;
                 try {
                     fragment = (android.support.v4.app.Fragment) fragmentClass.newInstance();
+                    Bundle b = new Bundle();
+                    b.putString("productID",product.getProductID());
+                    fragment.setArguments(b);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -79,14 +84,15 @@ public class NewArrivalProductsAdapter extends RecyclerView.Adapter<NewArrivalPr
 
     class ViewHolder extends RecyclerView.ViewHolder {
 
-        TextView textViewTitle, textViewShortDesc, textViewRating, textViewPrice;
+        TextView textViewTitle, textViewBy, textViewPrice;
         ImageView imageView;
 
         public ViewHolder(final View itemView) {
             super(itemView);
 
             textViewTitle = itemView.findViewById(R.id.textViewTitle);
-//            textViewPrice = itemView.findViewById(R.id.textViewPrice);
+            textViewPrice = itemView.findViewById(R.id.textViewPrice);
+            textViewBy = itemView.findViewById(R.id.textViewBy);
             imageView = itemView.findViewById(R.id.imageView);
         }
     }
