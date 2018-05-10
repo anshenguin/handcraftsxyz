@@ -39,7 +39,7 @@ public class ProductPageFragment extends Fragment {
     private static final String ARG_PARAM2 = "param2";
     ViewPager viewPager;
     ViewPagerAdapterProductImages viewPagerAdapter;
-    String productID;
+    String productID, sellerName;
     TextView productName, productAbout, productBy, productPrice;
     private static final String URL_PRODUCTS = "http://handicraft-com.stackstaging.com/myapi/api_all_products.php";
 
@@ -79,10 +79,10 @@ public class ProductPageFragment extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
 
-        Bundle bundle = this.getArguments();
-        if (bundle != null) {
-            productID = bundle.getString("productID");
-        }
+            Bundle bundle = this.getArguments();
+            if (bundle != null) {
+                productID = bundle.getString("productID");
+            }
     }
 
     @Override
@@ -106,6 +106,9 @@ public class ProductPageFragment extends Fragment {
                 fragmentClass = StorePageFragment.class;
                 try {
                     fragment = (android.support.v4.app.Fragment) fragmentClass.newInstance();
+                    Bundle b = new Bundle();
+                    b.putString("sellerName",sellerName);
+                    fragment.setArguments(b);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -175,7 +178,8 @@ public class ProductPageFragment extends Fragment {
                                 if(product.getString("productID").equals(productID)){
                                     productName.setText(product.getString("productName"));
                                     productAbout.setText(product.getString("about"));
-                                    productBy.setText(product.getString("sellerName"));
+                                    sellerName = product.getString("sellerName");
+                                    productBy.setText(sellerName);
                                     productPrice.setText("₹ "+product.getString("price"));
                                     break;
                                 }

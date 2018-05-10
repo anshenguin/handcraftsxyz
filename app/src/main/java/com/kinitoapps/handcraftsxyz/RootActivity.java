@@ -19,7 +19,7 @@ import static com.bumptech.glide.Glide.with;
 
 public class RootActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, HomeFragment.OnFragmentInteractionListener,shop_by_categoryFragment.OnFragmentInteractionListener,
-ProductPageFragment.OnFragmentInteractionListener, StorePageFragment.OnFragmentInteractionListener{
+ProductPageFragment.OnFragmentInteractionListener, StorePageFragment.OnFragmentInteractionListener, AllPurposeProductListFragment.OnFragmentInteractionListener{
 //    private static final String URL_PRODUCTS ="http://handicraft-com.stackstaging.com/myapi/api.php";
 //    ImageView tile1,tile2,tile3,tile4,tile5,tile6,tile7,tile8;
     int selected;
@@ -37,6 +37,7 @@ ProductPageFragment.OnFragmentInteractionListener, StorePageFragment.OnFragmentI
         final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         TextView home_text = findViewById(R.id.home_text);
         TextView shop_by_cat_text = findViewById(R.id.shop_by_cat_text);
+        TextView new_arrivals_text = findViewById(R.id.new_arrivals_text);
         home_text.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -60,6 +61,16 @@ ProductPageFragment.OnFragmentInteractionListener, StorePageFragment.OnFragmentI
             }
         });
 
+        new_arrivals_text.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                selected = 3;
+                if (drawer.isDrawerOpen(GravityCompat.START)) {
+                    mDrawerItemClicked = true;
+                    drawer.closeDrawer(GravityCompat.START);
+                }
+            }
+        });
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
@@ -105,7 +116,7 @@ ProductPageFragment.OnFragmentInteractionListener, StorePageFragment.OnFragmentI
                         }
                         FragmentManager fragmentManager = getSupportFragmentManager();
 
-                        fragmentManager.beginTransaction().setCustomAnimations(R.anim.enter_from_left,R.anim.exit_to_left).replace(R.id.main_content, fragment).commit();
+                        fragmentManager.beginTransaction().setCustomAnimations(R.anim.enter_from_left,R.anim.exit_to_left).replace(R.id.main_content, fragment, "homeFragment").addToBackStack("homeFragment").commit();
                     }
                     else if(selected == 2){
                         fragmentClass = shop_by_categoryFragment.class;
@@ -116,6 +127,17 @@ ProductPageFragment.OnFragmentInteractionListener, StorePageFragment.OnFragmentI
                         }
                         FragmentManager fragmentManager = getSupportFragmentManager();
                         fragmentManager.beginTransaction().setCustomAnimations(R.anim.enter_from_left,R.anim.exit_to_left).replace(R.id.main_content, fragment, "shopByCategory").addToBackStack("shopByCategory").commit();
+                    }
+
+                    else if(selected == 3){
+                        fragmentClass = AllPurposeProductListFragment.class;
+                        try {
+                            fragment = (android.support.v4.app.Fragment) fragmentClass.newInstance();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        FragmentManager fragmentManager = getSupportFragmentManager();
+                        fragmentManager.beginTransaction().setCustomAnimations(R.anim.enter_from_left,R.anim.exit_to_left).replace(R.id.main_content, fragment, "newArrivals").addToBackStack("newArrivals").commit();
                     }
 
                     mDrawerItemClicked = false;
@@ -194,22 +216,13 @@ ProductPageFragment.OnFragmentInteractionListener, StorePageFragment.OnFragmentI
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_home) {
-            selected = 1;
-        } else if (id == R.id.nav_categories) {
-            selected = 2;
-        } else if (id == R.id.nav_newarrivals) {
-            selected = 3;
-        }
         mDrawerItemClicked = true;
-
 //
 //        } else if (id == R.id.nav_share) {
 //
 //        } else if (id == R.id.nav_send) {
 //
 //        }
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;

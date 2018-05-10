@@ -4,10 +4,11 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -19,32 +20,37 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link StorePageFragment.OnFragmentInteractionListener} interface
+ * {@link AllPurposeProductListFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link StorePageFragment#newInstance} factory method to
+ * Use the {@link AllPurposeProductListFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class StorePageFragment extends Fragment {
+public class AllPurposeProductListFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-
+    boolean isNewArrival,isCategory;
     // TODO: Rename and change types of parameters
     private String mParam1;
-    private String mParam2;
-    String sellerUserName;
-    TextView storeName,storeUserName,storeSubs;
-    private OnFragmentInteractionListener mListener;
-    private static final String URL_STORES = "http://handicraft-com.stackstaging.com/myapi/api_all_stores.php";
+    List<Product> productList;
 
-    public StorePageFragment() {
+    private String mParam2;
+    RecyclerView recyclerView;
+
+    private OnFragmentInteractionListener mListener;
+
+    public AllPurposeProductListFragment() {
         // Required empty public constructor
     }
+    private static final String URL_PRODUCTS ="http://handicraft-com.stackstaging.com/myapi/api_all_products.php";
 
     /**
      * Use this factory method to create a new instance of
@@ -52,11 +58,11 @@ public class StorePageFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment StorePageFragment.
+     * @return A new instance of fragment AllPurposeProductListFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static StorePageFragment newInstance(String param1, String param2) {
-        StorePageFragment fragment = new StorePageFragment();
+    public static AllPurposeProductListFragment newInstance(String param1, String param2) {
+        AllPurposeProductListFragment fragment = new AllPurposeProductListFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -73,8 +79,9 @@ public class StorePageFragment extends Fragment {
         }
 
         Bundle bundle = this.getArguments();
-        if (bundle != null) {
-            sellerUserName = bundle.getString("sellerName");
+        if (bundle == null) {
+            isNewArrival = true;
+            isCategory = false;
         }
     }
 
@@ -82,16 +89,20 @@ public class StorePageFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View root = inflater.inflate(R.layout.fragment_store_page, container, false);
-        storeName = root.findViewById(R.id.store_name);
-        storeSubs = root.findViewById(R.id.store_subs);
-        storeUserName = root.findViewById(R.id.store_username);
-        loadStoreInfo();
+        View root = inflater.inflate(R.layout.fragment_all_purpose_product_list, container, false);
+        recyclerView = root.findViewById(R.id.recyclerViewProducts);
+        productList = new ArrayList<>();
+        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(getActivity(), 2);
+        recyclerView.setLayoutManager(layoutManager);
+        NewArrivalProductsAdapter adapter = new NewArrivalProductsAdapter(getActivity(), productList);
+        recyclerView.setAdapter(adapter);
+        if(isNewArrival)
+            loadAllProducts();
         return root;
     }
 
-    private void loadStoreInfo() {
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, URL_STORES,
+    private void loadAllProducts() {
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, URL_PRODUCTS,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -106,14 +117,19 @@ public class StorePageFragment extends Fragment {
                                 JSONObject product = array.getJSONObject(i);
 
                                 //adding the product to product list
-                                if(product.getString("username").equals(sellerUserName)){
-                                    storeName.setText(product.getString("name"));
-                                    storeUserName.setText(product.getString("username"));
-                                    storeSubs.setText(product.getString("subs")+" subs");
-                                    break;
-                                }
+                                productList.add(new Product(
+                                        product.getInt("id"),
+                                        product.getString("primaryImage"),
+                                        product.getString("productName"),
+                                        product.getDouble("price"),
+                                        product.getString("sellerName"),
+                                        product.getString("productID")
+
+                                ));
                             }
 
+                            NewArrivalProductsAdapter adapter = new NewArrivalProductsAdapter(getActivity(), productList);
+                            recyclerView.setAdapter(adapter);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -126,12 +142,9 @@ public class StorePageFragment extends Fragment {
                     }
                 });
 
-        //adding our string request to queue
+        //adding our stringrequest to queue
         Volley.newRequestQueue(getActivity()).add(stringRequest);
     }
-
-
-
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {

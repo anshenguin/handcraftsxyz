@@ -73,6 +73,7 @@
                     android:layout_height="wrap_content"
                     android:text="New Arrivals"
                     android:textColor="#000"
+                    android:id="@+id/new_arrivals_text"
                     android:padding="16dp"
                     android:textSize="20sp" />
 
@@ -81,6 +82,7 @@
                     android:layout_height="wrap_content"
                     android:text="Discover"
                     android:textColor="#000"
+
                     android:padding="16dp"
                     android:textSize="20sp" />
 
