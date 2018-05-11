@@ -41,7 +41,7 @@ public class AllPurposeProductListFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     List<Product> productList;
-
+    String category;
     private String mParam2;
     RecyclerView recyclerView;
 
@@ -51,7 +51,7 @@ public class AllPurposeProductListFragment extends Fragment {
         // Required empty public constructor
     }
     private static final String URL_PRODUCTS ="http://handicraft-com.stackstaging.com/myapi/api_all_products.php";
-
+    private static final String URL_CATEGORY = "http://handicraft-com.stackstaging.com/myapi/api_all_category_products.php?cat=";
     /**
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
@@ -83,6 +83,19 @@ public class AllPurposeProductListFragment extends Fragment {
             isNewArrival = true;
             isCategory = false;
         }
+        else{
+            if(!bundle.getString("category").equals("none")){
+                //CHOSE A CATEGORY FROM CATEGORY TAB
+                category = bundle.getString("category");
+                isNewArrival = false;
+                isCategory = true;
+            }
+
+            else{
+                isNewArrival = false;
+                isCategory = false;
+            }
+        }
     }
 
     @Override
@@ -98,7 +111,54 @@ public class AllPurposeProductListFragment extends Fragment {
         recyclerView.setAdapter(adapter);
         if(isNewArrival)
             loadAllProducts();
+        else if(isCategory)
+            loadProductsWithCategory();
         return root;
+    }
+
+    private void loadProductsWithCategory() {
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, URL_CATEGORY+category,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+                            //converting the string to json array object
+                            JSONArray array = new JSONArray(response);
+
+                            //traversing through all the object
+                            for (int i = 0; i < array.length(); i++) {
+
+                                //getting product object from json array
+                                JSONObject product = array.getJSONObject(i);
+
+                                //adding the product to product list
+                                productList.add(new Product(
+                                        product.getInt("id"),
+                                        product.getString("primaryImage"),
+                                        product.getString("productName"),
+                                        product.getDouble("price"),
+                                        product.getString("sellerName"),
+                                        product.getString("productID")
+
+                                ));
+                            }
+
+                            NewArrivalProductsAdapter adapter = new NewArrivalProductsAdapter(getActivity(), productList);
+                            recyclerView.setAdapter(adapter);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                    }
+                });
+
+        //adding our stringrequest to queue
+        Volley.newRequestQueue(getActivity()).add(stringRequest);
     }
 
     private void loadAllProducts() {

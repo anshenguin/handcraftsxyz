@@ -1,6 +1,7 @@
 package com.kinitoapps.handcraftsxyz;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -21,12 +22,12 @@ public class CategoryListAdapter extends RecyclerView.Adapter<CategoryListAdapte
 
     private Context mCtx;
     private List<String> categoryList;
-//    RootActivity activity;
+    RootActivity activity;
 
     public CategoryListAdapter(Context mCtx, List<String> categoryList) {
         this.mCtx = mCtx;
         this.categoryList = categoryList;
-//        activity = (RootActivity) mCtx;
+        activity = (RootActivity) mCtx;
     }
 
 
@@ -42,9 +43,28 @@ public class CategoryListAdapter extends RecyclerView.Adapter<CategoryListAdapte
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
-        String cat = categoryList.get(position);
+    public void onBindViewHolder(ViewHolder holder, final int position) {
+        final String cat = categoryList.get(position);
         holder.textViewCategory.setText(cat);
+        holder.textViewCategory.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                android.support.v4.app.Fragment fragment = null;
+                Class fragmentClass = null;
+                fragmentClass = AllPurposeProductListFragment.class;
+                try {
+                    fragment = (android.support.v4.app.Fragment) fragmentClass.newInstance();
+                    Bundle b = new Bundle();
+                    b.putString("category",cat);
+                    fragment.setArguments(b);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                //ERROR
+                FragmentManager fragmentManager = activity.getSupportFragmentManager();
+                fragmentManager.beginTransaction().replace(R.id.main_content, fragment, "productPage").addToBackStack("productPage").commit();
+            }
+        });
     }
 
     @Override
