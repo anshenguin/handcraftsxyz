@@ -39,7 +39,7 @@ public class DiscoverProductFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-    String productID, sellerName;
+    String sellerName;
     TextView productName, productAbout, productBy, productPrice;
     private static final String URL_PRODUCTS = "http://handicraft-com.stackstaging.com/myapi/api_random_product.php";
     private OnFragmentInteractionListener mListener;
@@ -115,14 +115,13 @@ public class DiscoverProductFragment extends Fragment {
                                 JSONObject product = array.getJSONObject(i);
 
                                 //adding the product to product list
-                                if(product.getString("productID").equals(productID)){
+
                                     productName.setText(product.getString("productName"));
                                     productAbout.setText(product.getString("about"));
                                     sellerName = product.getString("sellerName");
                                     productBy.setText(sellerName);
                                     productPrice.setText("₹ "+product.getString("price"));
-                                    break;
-                                }
+
                             }
 
                         } catch (JSONException e) {
