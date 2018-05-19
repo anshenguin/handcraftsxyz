@@ -1,5 +1,6 @@
 package com.kinitoapps.handcraftsxyz;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
@@ -38,6 +39,7 @@ ProductPageFragment.OnFragmentInteractionListener, StorePageFragment.OnFragmentI
         TextView home_text = findViewById(R.id.home_text);
         TextView shop_by_cat_text = findViewById(R.id.shop_by_cat_text);
         TextView new_arrivals_text = findViewById(R.id.new_arrivals_text);
+        TextView discover_text = findViewById(R.id.discover_text);
         home_text.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -65,6 +67,16 @@ ProductPageFragment.OnFragmentInteractionListener, StorePageFragment.OnFragmentI
             @Override
             public void onClick(View view) {
                 selected = 3;
+                if (drawer.isDrawerOpen(GravityCompat.START)) {
+                    mDrawerItemClicked = true;
+                    drawer.closeDrawer(GravityCompat.START);
+                }
+            }
+        });
+        discover_text.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                selected = 4;
                 if (drawer.isDrawerOpen(GravityCompat.START)) {
                     mDrawerItemClicked = true;
                     drawer.closeDrawer(GravityCompat.START);
@@ -138,6 +150,10 @@ ProductPageFragment.OnFragmentInteractionListener, StorePageFragment.OnFragmentI
                         }
                         FragmentManager fragmentManager = getSupportFragmentManager();
                         fragmentManager.beginTransaction().setCustomAnimations(R.anim.enter_from_left,R.anim.exit_to_left).replace(R.id.main_content, fragment, "newArrivals").addToBackStack("newArrivals").commit();
+                    }
+
+                    else if(selected == 4){
+                        startActivity(new Intent(RootActivity.this,DiscoverActivity.class));
                     }
 
                     mDrawerItemClicked = false;
