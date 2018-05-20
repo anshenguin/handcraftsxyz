@@ -1,8 +1,6 @@
 package com.kinitoapps.handcraftsxyz;
 
 import android.content.Context;
-import android.content.Intent;
-import android.media.Image;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
@@ -10,37 +8,22 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
-import com.bumptech.glide.Glide;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.List;
-
 /**
- * Created by HP INDIA on 04-Apr-18.
+ * Created by HP INDIA on 21-Apr-18.
  */
 
-public class ViewPagerAdapterRootSlider extends PagerAdapter {
-
+public class ViewPagerAdapterProductImages extends PagerAdapter {
     private Context context;
     private LayoutInflater layoutInflater;
-    private List<String> sliderImageLinks;
+    private Integer [] images = {R.drawable.wee,R.drawable.woo,R.drawable.wee,R.drawable.woo,R.drawable.wee};
 
-    public ViewPagerAdapterRootSlider(Context context, List<String> sliderImageLinks){
+    public ViewPagerAdapterProductImages(Context context){
         this.context = context;
-        this.sliderImageLinks = sliderImageLinks;
     }
 
     @Override
     public int getCount() {
-         return sliderImageLinks.size();
+        return images.length;
     }
 
     @Override
@@ -53,10 +36,7 @@ public class ViewPagerAdapterRootSlider extends PagerAdapter {
         layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = layoutInflater.inflate(R.layout.custom_image_for_slider, null);
         ImageView imageView = view.findViewById(R.id.imageView);
-        String imgLink = sliderImageLinks.get(position);
-        Glide.with(context)
-                .load(imgLink)
-                .into(imageView);
+        imageView.setImageResource(images[position]);
         ViewPager vp = (ViewPager) container;
         vp.addView(view, 0);
         return view;
@@ -68,5 +48,4 @@ public class ViewPagerAdapterRootSlider extends PagerAdapter {
         View view = (View) object;
         vp.removeView(view);
     }
-
 }

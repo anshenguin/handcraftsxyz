@@ -1,40 +1,26 @@
 package com.kinitoapps.handcraftsxyz;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.view.ViewPager;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
-
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import me.relex.circleindicator.CircleIndicator;
 
 import static com.bumptech.glide.Glide.with;
 
 public class RootActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, Home.OnFragmentInteractionListener,shop_by_category.OnFragmentInteractionListener{
+        implements NavigationView.OnNavigationItemSelectedListener, HomeFragment.OnFragmentInteractionListener,shop_by_categoryFragment.OnFragmentInteractionListener,
+ProductPageFragment.OnFragmentInteractionListener, StorePageFragment.OnFragmentInteractionListener, AllPurposeProductListFragment.OnFragmentInteractionListener{
 //    private static final String URL_PRODUCTS ="http://handicraft-com.stackstaging.com/myapi/api.php";
 //    ImageView tile1,tile2,tile3,tile4,tile5,tile6,tile7,tile8;
     int selected;
@@ -49,7 +35,54 @@ public class RootActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        TextView home_text = findViewById(R.id.home_text);
+        TextView shop_by_cat_text = findViewById(R.id.shop_by_cat_text);
+        TextView new_arrivals_text = findViewById(R.id.new_arrivals_text);
+        TextView discover_text = findViewById(R.id.discover_text);
+        home_text.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                selected = 1;
+                if (drawer.isDrawerOpen(GravityCompat.START)) {
+                    mDrawerItemClicked = true;
+                    drawer.closeDrawer(GravityCompat.START);
+
+                }
+            }
+        });
+
+        shop_by_cat_text.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                selected = 2;
+                if (drawer.isDrawerOpen(GravityCompat.START)) {
+                    mDrawerItemClicked = true;
+                    drawer.closeDrawer(GravityCompat.START);
+                }
+            }
+        });
+
+        new_arrivals_text.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                selected = 3;
+                if (drawer.isDrawerOpen(GravityCompat.START)) {
+                    mDrawerItemClicked = true;
+                    drawer.closeDrawer(GravityCompat.START);
+                }
+            }
+        });
+        discover_text.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                selected = 4;
+                if (drawer.isDrawerOpen(GravityCompat.START)) {
+                    mDrawerItemClicked = true;
+                    drawer.closeDrawer(GravityCompat.START);
+                }
+            }
+        });
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
@@ -60,7 +93,7 @@ public class RootActivity extends AppCompatActivity
 
         android.support.v4.app.Fragment fragment = null;
         Class fragmentClass = null;
-        fragmentClass = Home.class;
+        fragmentClass = HomeFragment.class;
         try {
             fragment = (android.support.v4.app.Fragment) fragmentClass.newInstance();
             selected = 1;
@@ -68,7 +101,7 @@ public class RootActivity extends AppCompatActivity
             e.printStackTrace();
         }
         FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction().replace(R.id.main_content, fragment).commit();
+        fragmentManager.beginTransaction().replace(R.id.main_content, fragment,"homeFragment").addToBackStack("homeFragment").commit();
         drawer.addDrawerListener(new DrawerLayout.DrawerListener() {
             @Override
             public void onDrawerSlide(View drawerView, float slideOffset) {
@@ -87,7 +120,7 @@ public class RootActivity extends AppCompatActivity
 
                 if(mDrawerItemClicked){
                     if(selected == 1){
-                        fragmentClass = Home.class;
+                        fragmentClass = HomeFragment.class;
                         try {
                             fragment = (android.support.v4.app.Fragment) fragmentClass.newInstance();
                         } catch (Exception e) {
@@ -95,17 +128,32 @@ public class RootActivity extends AppCompatActivity
                         }
                         FragmentManager fragmentManager = getSupportFragmentManager();
 
-                        fragmentManager.beginTransaction().replace(R.id.main_content, fragment).commit();
+                        fragmentManager.beginTransaction().setCustomAnimations(R.anim.enter_from_left,R.anim.exit_to_left).replace(R.id.main_content, fragment, "homeFragment").addToBackStack("homeFragment").commit();
                     }
                     else if(selected == 2){
-                        fragmentClass = shop_by_category.class;
+                        fragmentClass = shop_by_categoryFragment.class;
                         try {
                             fragment = (android.support.v4.app.Fragment) fragmentClass.newInstance();
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
                         FragmentManager fragmentManager = getSupportFragmentManager();
-                        fragmentManager.beginTransaction().replace(R.id.main_content, fragment).commit();
+                        fragmentManager.beginTransaction().setCustomAnimations(R.anim.enter_from_left,R.anim.exit_to_left).replace(R.id.main_content, fragment, "shopByCategory").addToBackStack("shopByCategory").commit();
+                    }
+
+                    else if(selected == 3){
+                        fragmentClass = AllPurposeProductListFragment.class;
+                        try {
+                            fragment = (android.support.v4.app.Fragment) fragmentClass.newInstance();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        FragmentManager fragmentManager = getSupportFragmentManager();
+                        fragmentManager.beginTransaction().setCustomAnimations(R.anim.enter_from_left,R.anim.exit_to_left).replace(R.id.main_content, fragment, "newArrivals").addToBackStack("newArrivals").commit();
+                    }
+
+                    else if(selected == 4){
+                        startActivity(new Intent(RootActivity.this,DiscoverActivity.class));
                     }
 
                     mDrawerItemClicked = false;
@@ -134,13 +182,25 @@ public class RootActivity extends AppCompatActivity
 
     }
 
+
     @Override
     public void onBackPressed() {
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            HomeFragment myFragment = (HomeFragment) getSupportFragmentManager().findFragmentByTag("homeFragment");
+            if(myFragment != null && myFragment.isVisible()){
+                finish();
+            }
+            else {
+                if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+                    getSupportFragmentManager().popBackStack();
+                }
+                else
+                    finish();
+            }
+
         }
     }
 
@@ -154,7 +214,7 @@ public class RootActivity extends AppCompatActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
+        // automatically handle clicks on the HomeFragment/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
@@ -172,22 +232,13 @@ public class RootActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_home) {
-            selected = 1;
-        } else if (id == R.id.nav_categories) {
-            selected = 2;
-        } else if (id == R.id.nav_newarrivals) {
-            selected = 3;
-        }
         mDrawerItemClicked = true;
-
 //
 //        } else if (id == R.id.nav_share) {
 //
 //        } else if (id == R.id.nav_send) {
 //
 //        }
-
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
