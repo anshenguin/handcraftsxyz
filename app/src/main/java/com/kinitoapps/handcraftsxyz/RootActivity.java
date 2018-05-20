@@ -40,6 +40,13 @@ ProductPageFragment.OnFragmentInteractionListener, StorePageFragment.OnFragmentI
         TextView shop_by_cat_text = findViewById(R.id.shop_by_cat_text);
         TextView new_arrivals_text = findViewById(R.id.new_arrivals_text);
         TextView discover_text = findViewById(R.id.discover_text);
+        TextView signup = findViewById(R.id.signup);
+        signup.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(RootActivity.this,SignUpActivity.class));
+            }
+        });
         home_text.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

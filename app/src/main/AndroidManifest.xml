@@ -24,7 +24,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".AboutStoreActivity" />
-        <activity android:name=".DiscoverActivity"></activity>
+        <activity android:name=".DiscoverActivity" />
+        <activity android:name=".SignUpActivity"></activity>
     </application>
 
 </manifest>
