@@ -44,7 +44,7 @@ ProductPageFragment.OnFragmentInteractionListener, StorePageFragment.OnFragmentI
         signup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(RootActivity.this,SignUpActivity.class));
+                startActivity(new Intent(RootActivity.this,LoginActivity.class));
             }
         });
         home_text.setOnClickListener(new View.OnClickListener() {
