@@ -1,4 +1,4 @@
-package com.kinitoapps.handcraftsxyz;
+package com.kinitoapps.handcraftsxyz.activities;
 
 import android.content.Intent;
 import android.net.Uri;
@@ -13,35 +13,59 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import com.kinitoapps.handcraftsxyz.fragments.AllPurposeProductListFragment;
+import com.kinitoapps.handcraftsxyz.fragments.HomeFragment;
+import com.kinitoapps.handcraftsxyz.fragments.ProductPageFragment;
+import com.kinitoapps.handcraftsxyz.R;
+import com.kinitoapps.handcraftsxyz.fragments.StorePageFragment;
+import com.kinitoapps.handcraftsxyz.fragments.shop_by_categoryFragment;
+import com.kinitoapps.handcraftsxyz.helper.SQLiteHandler;
+import com.kinitoapps.handcraftsxyz.helper.SessionManager;
+
+import java.util.HashMap;
 
 import static com.bumptech.glide.Glide.with;
 
 public class RootActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, HomeFragment.OnFragmentInteractionListener,shop_by_categoryFragment.OnFragmentInteractionListener,
-ProductPageFragment.OnFragmentInteractionListener, StorePageFragment.OnFragmentInteractionListener, AllPurposeProductListFragment.OnFragmentInteractionListener{
+        ProductPageFragment.OnFragmentInteractionListener, StorePageFragment.OnFragmentInteractionListener, AllPurposeProductListFragment.OnFragmentInteractionListener {
 //    private static final String URL_PRODUCTS ="http://handicraft-com.stackstaging.com/myapi/api.php";
 //    ImageView tile1,tile2,tile3,tile4,tile5,tile6,tile7,tile8;
     int selected;
     boolean mDrawerItemClicked = false;
+    SessionManager session;
+    TextView bannername,signup;
+    LinearLayout loggedinoptions;
+    private SQLiteHandler db;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_root);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        session = new SessionManager(getApplicationContext());
 
-        final DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        final DrawerLayout drawer = findViewById(R.id.drawer_layout);
         TextView home_text = findViewById(R.id.home_text);
         TextView shop_by_cat_text = findViewById(R.id.shop_by_cat_text);
+        loggedinoptions = findViewById(R.id.drawer_loggedin_options);
         TextView new_arrivals_text = findViewById(R.id.new_arrivals_text);
         TextView discover_text = findViewById(R.id.discover_text);
-        TextView signup = findViewById(R.id.signup);
+        signup = findViewById(R.id.signup);
+        bannername = findViewById(R.id.banner_name);
         signup.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(RootActivity.this,LoginActivity.class));
+            }
+        });
+        bannername.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(RootActivity.this,LoginActivity.class));
@@ -95,7 +119,7 @@ ProductPageFragment.OnFragmentInteractionListener, StorePageFragment.OnFragmentI
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
         android.support.v4.app.Fragment fragment = null;
@@ -191,8 +215,28 @@ ProductPageFragment.OnFragmentInteractionListener, StorePageFragment.OnFragmentI
 
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        if (session.isLoggedIn()) {
+            loggedinoptions.setVisibility(View.VISIBLE);
+            bannername.setVisibility(View.VISIBLE);
+            signup.setVisibility(View.GONE);
+            db = new SQLiteHandler(getApplicationContext());
+            HashMap<String, String> user = db.getUserDetails();
+            String name = user.get("name");
+            bannername.setText("Hello "+name+"!");
+
+        }
+        else {
+            loggedinoptions.setVisibility(View.GONE);
+            bannername.setVisibility(View.GONE);
+            signup.setVisibility(View.VISIBLE);
+        }
+    }
+
+    @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -246,7 +290,7 @@ ProductPageFragment.OnFragmentInteractionListener, StorePageFragment.OnFragmentI
 //        } else if (id == R.id.nav_send) {
 //
 //        }
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }

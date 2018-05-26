@@ -1,4 +1,4 @@
-package com.kinitoapps.handcraftsxyz;
+package com.kinitoapps.handcraftsxyz.activities;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -14,6 +14,9 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.kinitoapps.handcraftsxyz.AppConfig;
+import com.kinitoapps.handcraftsxyz.AppController;
+import com.kinitoapps.handcraftsxyz.R;
 import com.kinitoapps.handcraftsxyz.helper.SQLiteHandler;
 import com.kinitoapps.handcraftsxyz.helper.SessionManager;
 

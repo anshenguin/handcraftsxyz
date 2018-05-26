@@ -1,4 +1,4 @@
-package com.kinitoapps.handcraftsxyz;
+package com.kinitoapps.handcraftsxyz.activities;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.kinitoapps.handcraftsxyz.R;
 import com.kinitoapps.handcraftsxyz.helper.SQLiteHandler;
 import com.kinitoapps.handcraftsxyz.helper.SessionManager;
 

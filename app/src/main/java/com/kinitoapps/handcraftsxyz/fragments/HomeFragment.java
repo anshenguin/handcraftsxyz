@@ -1,57 +1,73 @@
-package com.kinitoapps.handcraftsxyz;
+package com.kinitoapps.handcraftsxyz.fragments;
 
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.kinitoapps.handcraftsxyz.adapters.NewArrivalProductsAdapter;
+import com.kinitoapps.handcraftsxyz.Product;
+import com.kinitoapps.handcraftsxyz.R;
+import com.kinitoapps.handcraftsxyz.adapters.ViewPagerAdapterRootSlider;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import me.relex.circleindicator.CircleIndicator;
+
+import static com.bumptech.glide.Glide.with;
+
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link ProductPageFragment.OnFragmentInteractionListener} interface
+ * {@link HomeFragment.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link ProductPageFragment#newInstance} factory method to
+ * Use the {@link HomeFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ProductPageFragment extends Fragment {
+public class HomeFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-    ViewPager viewPager;
-    ViewPagerAdapterProductImages viewPagerAdapter;
-    String productID, sellerName;
-    TextView productName, productAbout, productBy, productPrice;
-    private static final String URL_PRODUCTS = "http://handicraft-com.stackstaging.com/myapi/api_all_products.php";
 
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+    RecyclerView.LayoutManager recyclerViewLayoutManager;
+    List<Product> productList;
+    RecyclerView recyclerView;
+    List<String> sliderImageLinks;
+    RecyclerView.Adapter recyclerView_Adapter;
+    CircleIndicator indicator;
+    ViewPagerAdapterRootSlider viewPagerAdapter;
+    ViewPager viewPager;
+
 
     private OnFragmentInteractionListener mListener;
 
-    public ProductPageFragment() {
+    public HomeFragment() {
         // Required empty public constructor
     }
+        private static final String URL_PRODUCTS ="http://handicraft-com.stackstaging.com/myapi/api_all_products.php";
+        private static final String URL_SLIDER_IMAGES = "http://handicraft-com.stackstaging.com/myapi/api_for_slidebar.php";
+
 
     /**
      * Use this factory method to create a new instance of
@@ -59,11 +75,11 @@ public class ProductPageFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment ProductPageFragment.
+     * @return A new instance of fragment HomeFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static ProductPageFragment newInstance(String param1, String param2) {
-        ProductPageFragment fragment = new ProductPageFragment();
+    public static HomeFragment newInstance(String param1, String param2) {
+        HomeFragment fragment = new HomeFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -78,80 +94,72 @@ public class ProductPageFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-
-            Bundle bundle = this.getArguments();
-            if (bundle != null) {
-                productID = bundle.getString("productID");
-            }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        final View view = inflater.inflate(R.layout.fragment_product_page, container, false);
+        View view = inflater.inflate(R.layout.fragment_home, container, false);
         viewPager = view.findViewById(R.id.viewpager);
-        final ImageView arrowDown = view.findViewById(R.id.about_product_head_i);
-        TextView about_header_t = view.findViewById(R.id.about_product_head_t);
-        productName = view.findViewById(R.id.productName);
-        productPrice = view.findViewById(R.id.productPrice);
-        productBy = view.findViewById(R.id.sellerName);
-        productAbout = view.findViewById(R.id.productAbout);
-        productBy.setOnClickListener(new View.OnClickListener() {
+        recyclerView = view.findViewById(R.id.recyclerView);
+        productList = new ArrayList<>();
+        sliderImageLinks = new ArrayList<>();
+        recyclerViewLayoutManager = new GridLayoutManager(getActivity(), 2);
+        recyclerView.setOnFlingListener(new RecyclerView.OnFlingListener() {
             @Override
-            public void onClick(View view) {
-                Class fragmentClass = null;
-                android.support.v4.app.Fragment fragment = null;
-
-                fragmentClass = StorePageFragment.class;
-                try {
-                    fragment = (android.support.v4.app.Fragment) fragmentClass.newInstance();
-                    Bundle b = new Bundle();
-                    b.putString("sellerName",sellerName);
-                    fragment.setArguments(b);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                FragmentManager fragmentManager = getFragmentManager();
-
-                fragmentManager.beginTransaction().replace(R.id.main_content, fragment,"storePage").addToBackStack("storePage").commit();
+            public boolean onFling(int velocityX, int velocityY) {
+                recyclerView.dispatchNestedFling(velocityX, velocityY, false);
+                return false;
             }
         });
-        about_header_t.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (!(arrowDown.getRotation() >= 90)) {
-                    arrowDown.setRotation(arrowDown.getRotation() + 90);
-                    productAbout.setVisibility(View.VISIBLE);
-                }
-                else{
-                    arrowDown.setRotation(arrowDown.getRotation() - 90);
-                    productAbout.setVisibility(View.GONE);
-                }
-            }
-        });
-        arrowDown.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(!(view.getRotation()>=90)) {
-                    view.setRotation(view.getRotation() + 90);
-                    productAbout.setVisibility(View.VISIBLE);
 
-                }
-                else
-                {
-                    view.setRotation(view.getRotation() - 90);
-                    productAbout.setVisibility(View.GONE);
-                }
-            }
-        });
-        viewPagerAdapter = new ViewPagerAdapterProductImages(getActivity());
-        viewPager.setAdapter(viewPagerAdapter);
-        populateProductInfo();
+        recyclerView.setLayoutManager(recyclerViewLayoutManager);
+        recyclerView_Adapter = new NewArrivalProductsAdapter(getActivity(),productList);
+        recyclerView.setAdapter(recyclerView_Adapter);
+        loadSliderImages();
+        indicator = view.findViewById(R.id.indicator);
+        loadProducts();
         return view;
-
     }
-    private void populateProductInfo() {
+
+    private void loadSliderImages() {
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, URL_SLIDER_IMAGES,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+                            //converting the string to json array object
+                            JSONArray array = new JSONArray(response);
+
+                            //traversing through all the object
+                            for (int i = 0; i < array.length(); i++) {
+
+                                //getting product object from json array
+                                JSONObject sliderImageLink = array.getJSONObject(i);
+
+                                sliderImageLinks.add(sliderImageLink.getString("images"));
+                            }
+                            viewPagerAdapter = new ViewPagerAdapterRootSlider(getActivity(),sliderImageLinks);
+                            viewPager.setAdapter(viewPagerAdapter);
+                            indicator.setViewPager(viewPager);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                    }
+                });
+
+        //adding our stringrequest to queue
+        Volley.newRequestQueue(getActivity()).add(stringRequest);
+    }
+
+    private void loadProducts() {
 
         /*
         * Creating a String Request
@@ -175,16 +183,19 @@ public class ProductPageFragment extends Fragment {
                                 JSONObject product = array.getJSONObject(i);
 
                                 //adding the product to product list
-                                if(product.getString("productID").equals(productID)){
-                                    productName.setText(product.getString("productName"));
-                                    productAbout.setText(product.getString("about"));
-                                    sellerName = product.getString("sellerName");
-                                    productBy.setText(sellerName);
-                                    productPrice.setText("₹ "+product.getString("price"));
-                                    break;
-                                }
+                                productList.add(new Product(
+                                        product.getInt("id"),
+                                        product.getString("primaryImage"),
+                                        product.getString("productName"),
+                                        product.getDouble("price"),
+                                        product.getString("sellerName"),
+                                        product.getString("productID")
+
+                                ));
                             }
 
+                            NewArrivalProductsAdapter adapter = new NewArrivalProductsAdapter(getActivity(), productList);
+                            recyclerView.setAdapter(adapter);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -197,7 +208,7 @@ public class ProductPageFragment extends Fragment {
                     }
                 });
 
-        //adding our string request to queue
+        //adding our stringrequest to queue
         Volley.newRequestQueue(getActivity()).add(stringRequest);
     }
 

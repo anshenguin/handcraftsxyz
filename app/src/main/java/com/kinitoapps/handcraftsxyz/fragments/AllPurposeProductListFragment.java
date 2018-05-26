@@ -1,4 +1,4 @@
-package com.kinitoapps.handcraftsxyz;
+package com.kinitoapps.handcraftsxyz.fragments;
 
 import android.content.Context;
 import android.net.Uri;
@@ -15,6 +15,9 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.kinitoapps.handcraftsxyz.adapters.NewArrivalProductsAdapter;
+import com.kinitoapps.handcraftsxyz.Product;
+import com.kinitoapps.handcraftsxyz.R;
 
 import org.json.JSONArray;
 import org.json.JSONException;

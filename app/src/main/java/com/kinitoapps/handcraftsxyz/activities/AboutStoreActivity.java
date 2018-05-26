@@ -1,7 +1,9 @@
-package com.kinitoapps.handcraftsxyz;
+package com.kinitoapps.handcraftsxyz.activities;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+
+import com.kinitoapps.handcraftsxyz.R;
 
 public class AboutStoreActivity extends AppCompatActivity {
 
