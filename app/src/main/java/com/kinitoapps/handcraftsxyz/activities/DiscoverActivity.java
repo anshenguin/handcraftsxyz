@@ -1,4 +1,4 @@
-package com.kinitoapps.handcraftsxyz;
+package com.kinitoapps.handcraftsxyz.activities;
 
 import android.net.Uri;
 import android.support.design.widget.FloatingActionButton;
@@ -6,12 +6,16 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Toast;
+
+import com.kinitoapps.handcraftsxyz.fragments.DefaultDiscoverFragment;
+import com.kinitoapps.handcraftsxyz.fragments.DiscoverProductFragment;
+import com.kinitoapps.handcraftsxyz.fragments.DiscoverStoreFragment;
+import com.kinitoapps.handcraftsxyz.R;
 
 import java.util.Random;
 
 public class DiscoverActivity extends AppCompatActivity implements DefaultDiscoverFragment.OnFragmentInteractionListener,DiscoverStoreFragment.OnFragmentInteractionListener,
-DiscoverProductFragment.OnFragmentInteractionListener{
+        DiscoverProductFragment.OnFragmentInteractionListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

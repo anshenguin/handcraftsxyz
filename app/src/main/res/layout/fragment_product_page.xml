@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context="com.kinitoapps.handcraftsxyz.ProductPageFragment">
+    tools:context="com.kinitoapps.handcraftsxyz.fragments.ProductPageFragment">
 
     <!-- TODO: Update blank fragment layout -->
     <android.support.v4.widget.NestedScrollView

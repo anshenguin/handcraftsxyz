@@ -43,14 +43,23 @@
 
             <TextView
                 android:layout_width="match_parent"
-                android:layout_height="100dp"
-                android:text="SIGN UP"
-                android:textSize="32sp"
+                android:layout_height="160dp"
+                android:text="SIGN UP OR LOGIN"
+                android:textSize="20sp"
                 android:background="#123a8a"
                 android:id="@+id/signup"
-                android:textColor="#000"
+                android:textColor="#fff"
+                android:paddingTop="?android:actionBarSize"
                 android:gravity="center"
-                android:layout_marginTop="?attr/actionBarSize"
+                />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="160dp"
+                android:paddingTop="?android:actionBarSize"
+                android:gravity="center"
+                android:textSize="20sp"
+                android:id="@+id/banner_name"
+                android:background="#76afff"
                 />
 
 
@@ -106,6 +115,7 @@
                 android:orientation="vertical"
                 android:paddingTop="8dp"
                 android:background="#ccc"
+                android:id="@+id/drawer_loggedin_options"
                 android:paddingBottom="8dp"
                 android:layout_height="wrap_content">
 
