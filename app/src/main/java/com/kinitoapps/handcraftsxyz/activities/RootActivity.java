@@ -2,17 +2,23 @@ package com.kinitoapps.handcraftsxyz.activities;
 
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.AppCompatTextView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -25,6 +31,7 @@ import com.kinitoapps.handcraftsxyz.fragments.shop_by_categoryFragment;
 import com.kinitoapps.handcraftsxyz.helper.SQLiteHandler;
 import com.kinitoapps.handcraftsxyz.helper.SessionManager;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import static com.bumptech.glide.Glide.with;
@@ -47,10 +54,10 @@ public class RootActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_root);
         Toolbar toolbar = findViewById(R.id.toolbar);
+        TextView mTitle = findViewById(R.id.toolbar_title);
+        toolbar.setTitle("");
         setSupportActionBar(toolbar);
-
         session = new SessionManager(getApplicationContext());
-
         final DrawerLayout drawer = findViewById(R.id.drawer_layout);
         TextView home_text = findViewById(R.id.home_text);
         TextView shop_by_cat_text = findViewById(R.id.shop_by_cat_text);
@@ -122,11 +129,11 @@ public class RootActivity extends AppCompatActivity
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        android.support.v4.app.Fragment fragment = null;
+        Fragment fragment = null;
         Class fragmentClass = null;
         fragmentClass = HomeFragment.class;
         try {
-            fragment = (android.support.v4.app.Fragment) fragmentClass.newInstance();
+            fragment = (Fragment) fragmentClass.newInstance();
             selected = 1;
         } catch (Exception e) {
             e.printStackTrace();
@@ -146,14 +153,14 @@ public class RootActivity extends AppCompatActivity
 
             @Override
             public void onDrawerClosed(View drawerView) {
-                android.support.v4.app.Fragment fragment = null;
+                Fragment fragment = null;
                 Class fragmentClass = null;
 
                 if(mDrawerItemClicked){
                     if(selected == 1){
                         fragmentClass = HomeFragment.class;
                         try {
-                            fragment = (android.support.v4.app.Fragment) fragmentClass.newInstance();
+                            fragment = (Fragment) fragmentClass.newInstance();
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -164,7 +171,7 @@ public class RootActivity extends AppCompatActivity
                     else if(selected == 2){
                         fragmentClass = shop_by_categoryFragment.class;
                         try {
-                            fragment = (android.support.v4.app.Fragment) fragmentClass.newInstance();
+                            fragment = (Fragment) fragmentClass.newInstance();
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -175,7 +182,7 @@ public class RootActivity extends AppCompatActivity
                     else if(selected == 3){
                         fragmentClass = AllPurposeProductListFragment.class;
                         try {
-                            fragment = (android.support.v4.app.Fragment) fragmentClass.newInstance();
+                            fragment = (Fragment) fragmentClass.newInstance();
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -255,6 +262,34 @@ public class RootActivity extends AppCompatActivity
         }
     }
 
+//    private void centerTitle() {
+//        ArrayList<View> textViews = new ArrayList<>();
+//
+//        getWindow().getDecorView().findViewsWithText(textViews, getTitle(), View.FIND_VIEWS_WITH_TEXT);
+//
+//        if(textViews.size() > 0) {
+//            AppCompatTextView appCompatTextView = null;
+//            if(textViews.size() == 1) {
+//                appCompatTextView = (AppCompatTextView) textViews.get(0);
+//            } else {
+//                for(View v : textViews) {
+//                    if(v.getParent() instanceof Toolbar) {
+//                        appCompatTextView = (AppCompatTextView) v;
+//                        break;
+//                    }
+//                }
+//            }
+//
+//            if(appCompatTextView != null) {
+//                ViewGroup.LayoutParams params = appCompatTextView.getLayoutParams();
+//                params.width = ViewGroup.LayoutParams.MATCH_PARENT;
+//                appCompatTextView.setLayoutParams(params);
+//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+//                    appCompatTextView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+//                }
+//            }
+//        }
+//    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.

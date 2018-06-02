@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,12 +19,19 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.kinitoapps.handcraftsxyz.Product;
 import com.kinitoapps.handcraftsxyz.R;
+import com.kinitoapps.handcraftsxyz.Review;
+import com.kinitoapps.handcraftsxyz.adapters.NewArrivalProductsAdapter;
+import com.kinitoapps.handcraftsxyz.adapters.ReviewsAdapter;
 import com.kinitoapps.handcraftsxyz.adapters.ViewPagerAdapterProductImages;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -42,7 +51,11 @@ public class ProductPageFragment extends Fragment {
     ViewPagerAdapterProductImages viewPagerAdapter;
     String productID, sellerName;
     TextView productName, productAbout, productBy, productPrice;
-    private static final String URL_PRODUCTS = "http://handicraft-com.stackstaging.com/myapi/api_all_products.php";
+    private static final String URL_PRODUCTS = "http://handicraft-com.stackstaging.com/myapi/api_all_products.php?prod=";
+    private static final String URL_REVIEWS = "http://handicraft-com.stackstaging.com/myapi/api_reviews.php?prod=";
+    RecyclerView recyclerView;
+    ReviewsAdapter reviewsAdapter;
+    List<Review> reviewList;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -92,11 +105,25 @@ public class ProductPageFragment extends Fragment {
         // Inflate the layout for this fragment
         final View view = inflater.inflate(R.layout.fragment_product_page, container, false);
         viewPager = view.findViewById(R.id.viewpager);
+        reviewList = new ArrayList<>();
         final ImageView arrowDown = view.findViewById(R.id.about_product_head_i);
         TextView about_header_t = view.findViewById(R.id.about_product_head_t);
         productName = view.findViewById(R.id.productName);
         productPrice = view.findViewById(R.id.productPrice);
         productBy = view.findViewById(R.id.sellerName);
+        recyclerView = view.findViewById(R.id.recycler_all_reviews);
+        recyclerView.setOnFlingListener(new RecyclerView.OnFlingListener() {
+            @Override
+            public boolean onFling(int velocityX, int velocityY) {
+                recyclerView.dispatchNestedFling(velocityX, velocityY, false);
+                return false;
+            }
+        });
+        LinearLayoutManager mLayoutManager = new LinearLayoutManager(getContext());
+        recyclerView.setLayoutManager(mLayoutManager);
+        reviewsAdapter = new ReviewsAdapter(getActivity(),reviewList);
+        recyclerView.setAdapter(reviewsAdapter);
+
         productAbout = view.findViewById(R.id.productAbout);
         productBy.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -149,6 +176,7 @@ public class ProductPageFragment extends Fragment {
         viewPagerAdapter = new ViewPagerAdapterProductImages(getActivity());
         viewPager.setAdapter(viewPagerAdapter);
         populateProductInfo();
+        loadReviews();
         return view;
 
     }
@@ -161,30 +189,22 @@ public class ProductPageFragment extends Fragment {
         * Then we have a Response Listener and a Error Listener
         * In response listener we will get the JSON response as a String
         * */
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, URL_PRODUCTS,
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, URL_PRODUCTS+productID,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
                         try {
                             //converting the string to json array object
                             JSONArray array = new JSONArray(response);
-
                             //traversing through all the object
-                            for (int i = 0; i < array.length(); i++) {
-
                                 //getting product object from json array
-                                JSONObject product = array.getJSONObject(i);
-
+                                JSONObject product = array.getJSONObject(0);
                                 //adding the product to product list
-                                if(product.getString("productID").equals(productID)){
                                     productName.setText(product.getString("productName"));
                                     productAbout.setText(product.getString("about"));
                                     sellerName = product.getString("sellerName");
                                     productBy.setText(sellerName);
                                     productPrice.setText("₹ "+product.getString("price"));
-                                    break;
-                                }
-                            }
 
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -199,6 +219,62 @@ public class ProductPageFragment extends Fragment {
                 });
 
         //adding our string request to queue
+        Volley.newRequestQueue(getActivity()).add(stringRequest);
+    }
+    private void loadReviews() {
+
+        /*
+        * Creating a String Request
+        * The request type is GET defined by first parameter
+        * The URL is defined in the second parameter
+        * Then we have a Response Listener and a Error Listener
+        * In response listener we will get the JSON response as a String
+        * */
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, URL_REVIEWS+productID,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+                            //converting the string to json array object
+                            JSONArray array = new JSONArray(response);
+
+                            //traversing through all the object
+                            int z;
+                            if(array.length()<=5)
+                                z=array.length();
+                            else
+                                z=5;
+                            for (int i = 0; i < z; i++) {
+
+                                //getting product object from json array
+                                JSONObject review = array.getJSONObject(i);
+                                if(review.getString("text").isEmpty())
+                                    reviewList.add(new Review(
+                                            review.getString("name"),
+                                            "i was empty",
+                                            review.getInt("stars")));
+                                else
+                                reviewList.add(new Review(
+                                        review.getString("name"),
+                                        review.getString("text"),
+                                        review.getInt("stars")));
+                            }
+
+                            reviewsAdapter = new ReviewsAdapter(getActivity(), reviewList);
+                            recyclerView.setAdapter(reviewsAdapter);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                    }
+                });
+
+        //adding our stringrequest to queue
         Volley.newRequestQueue(getActivity()).add(stringRequest);
     }
 
