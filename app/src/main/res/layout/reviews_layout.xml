@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="8dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <TextView
+        android:id="@+id/star_big_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:text="4.2★"
+        android:textSize="32sp"
+        app:layout_constraintStart_toStartOf="parent" />
+
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="55dp"
+        android:layout_marginLeft="24dp"
+        android:maxWidth="80dp"
+        android:orientation="vertical"
+        app:layout_constraintLeft_toRightOf="@id/star_big_text"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="11dp"
+            android:background="#123" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="11dp"
+            android:background="#456" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="11dp"
+            android:background="#789" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="11dp"
+            android:background="#abc" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="11dp"
+            android:background="#cde" />
+
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/person_image"
+        android:layout_width="16dp"
+        android:layout_height="12dp"
+        android:layout_marginLeft="28dp"
+        android:src="@drawable/ic_action_name"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/star_big_text" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="10sp"
+        app:layout_constraintLeft_toRightOf="@id/person_image"
+        android:text="2345"
+        android:id="@+id/number_of_reviews"
+        app:layout_constraintTop_toBottomOf="@id/star_big_text"/>
+
+
+
+
+</android.support.constraint.ConstraintLayout>

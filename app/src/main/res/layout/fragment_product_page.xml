@@ -156,18 +156,84 @@ Description, description lorem ipsum dolor sit amer."
                 app:layout_constraintStart_toEndOf="@+id/reviews_head_t"
                 app:layout_constraintTop_toBottomOf="@id/productAbout" />
 
+            <TextView
+                android:id="@+id/star_big_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:text="4.2★"
+                android:layout_marginTop="24dp"
+                android:textSize="32sp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/reviews_head_t" />
+
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_marginTop="24dp"
+                android:layout_height="55dp"
+                android:layout_marginLeft="24dp"
+                android:maxWidth="80dp"
+                android:id="@+id/review_bars"
+                android:orientation="vertical"
+                app:layout_constraintLeft_toRightOf="@id/star_big_text"
+                app:layout_constraintTop_toBottomOf="@id/reviews_head_t">
+
+                <View
+                    android:layout_width="200dp"
+                    android:layout_height="11dp"
+                    android:background="#123" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="11dp"
+                    android:background="#456" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="11dp"
+                    android:background="#789" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="11dp"
+                    android:background="#abc" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="11dp"
+                    android:background="#cde" />
+
+            </LinearLayout>
+
             <ImageView
-                android:id="@+id/productReviews"
+                android:id="@+id/person_image"
+                android:layout_width="16dp"
+                android:layout_height="12dp"
+                android:layout_marginLeft="28dp"
+                android:src="@drawable/ic_action_name"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/star_big_text" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="10sp"
+                app:layout_constraintLeft_toRightOf="@id/person_image"
+                android:text="2345"
+                android:id="@+id/number_of_reviews"
+                app:layout_constraintTop_toBottomOf="@id/star_big_text"/>
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recycler_all_reviews"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:scaleType="centerCrop"
-                android:src="@drawable/layout_comin_soon"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/reviews_head_t"
-                app:layout_constraintVertical_bias="1.0" />
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/review_bars" />
+
+
+
+
 
 
         </android.support.constraint.ConstraintLayout>
