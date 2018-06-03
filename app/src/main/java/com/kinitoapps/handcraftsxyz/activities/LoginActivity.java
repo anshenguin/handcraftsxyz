@@ -39,7 +39,7 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        // gulshan trying code
+        //  trying code
 
         inputEmail =  findViewById(R.id.email);
         inputPassword =  findViewById(R.id.password);
