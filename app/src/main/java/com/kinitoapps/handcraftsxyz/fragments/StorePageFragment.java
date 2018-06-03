@@ -1,24 +1,39 @@
 package com.kinitoapps.handcraftsxyz.fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.kinitoapps.handcraftsxyz.AppConfig;
+import com.kinitoapps.handcraftsxyz.AppController;
 import com.kinitoapps.handcraftsxyz.R;
+import com.kinitoapps.handcraftsxyz.activities.LoginActivity;
+import com.kinitoapps.handcraftsxyz.activities.RegisterActivity;
+import com.kinitoapps.handcraftsxyz.helper.SQLiteHandler;
+import com.kinitoapps.handcraftsxyz.helper.SessionManager;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -29,17 +44,23 @@ import org.json.JSONObject;
  * Use the {@link StorePageFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class StorePageFragment extends Fragment {
+public class StorePageFragment extends Fragment implements View.OnClickListener{
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    private static final String TAG = StorePageFragment.class.getSimpleName();
 
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+    private boolean hasSubscribed=true;
     String sellerUserName;
+    private SessionManager session;
     TextView storeName,storeUserName,storeSubs;
+    Button sub_btn;
+    private SQLiteHandler db;
+
     private OnFragmentInteractionListener mListener;
     private static final String URL_STORES = "http://handicraft-com.stackstaging.com/myapi/api_all_stores.php";
 
@@ -87,7 +108,12 @@ public class StorePageFragment extends Fragment {
         storeName = root.findViewById(R.id.store_name);
         storeSubs = root.findViewById(R.id.store_subs);
         storeUserName = root.findViewById(R.id.store_username);
+        sub_btn=root.findViewById(R.id.sub_button);
+        db= new SQLiteHandler(getContext());
+        sub_btn.setOnClickListener(this);
+        session = new SessionManager(getContext());
         loadStoreInfo();
+        checkSub();
         return root;
     }
 
@@ -156,6 +182,185 @@ public class StorePageFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public void onClick(View view) {
+        if (view==sub_btn) {
+            if (!hasSubscribed)
+                getSubscribed();
+            else
+                getUnsubcribed();
+        }
+    }
+
+
+    private void checkSub(){
+        final String subscriber_uid=db.getUserDetails().get("email"),unique_store_id= sellerUserName;
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, AppConfig.URL_CHECKSUB,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String ServerResponse) {
+                        try {
+                            JSONObject obj = new JSONObject(ServerResponse);
+                            if(obj.getString("subscribed").equals("TRUE")) {
+                                hasSubscribed = true;
+                                sub_btn.setText("UNSUBSCRIBE");
+                            }
+                            else {
+                                hasSubscribed = false;
+                                sub_btn.setText("SUBSCRIBE");
+
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+
+                        // Hiding the progress dialog after all task complete.
+
+                        // Showing response message coming from server.
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError volleyError) {
+
+                        // Hiding the progress dialog after all task complete.
+
+                        // Showing error message if something goes wrong.
+                        Toast.makeText(getContext(), volleyError.toString(), Toast.LENGTH_LONG).show();
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams()  {
+
+                // Creating Map String Params.
+                Map<String, String> params = new HashMap<String, String>();
+
+                // Adding All values to Params.
+                params.put("subscriber_uid", subscriber_uid);
+                params.put("unique_store_id", unique_store_id);
+                Log.v("subs1",subscriber_uid);
+                Log.v("sub2",unique_store_id);
+
+                return params;
+            }
+
+        };
+        AppController.getInstance().addToRequestQueue(stringRequest);
+
+    }
+
+    private void getUnsubcribed() {
+        final String subscriber_uid=db.getUserDetails().get("email"),unique_store_id= sellerUserName;
+        Toast.makeText(getContext(),"Unsubscribed succesfully",Toast.LENGTH_SHORT).show();
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, AppConfig.URL_UNSUBSCRIPTION,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String ServerResponse) {
+                        sub_btn.setText("SUBSCRIBE");
+                        hasSubscribed = false;
+                        // Hiding the progress dialog after all task complete.
+
+                        // Showing response message coming from server.
+                        Toast.makeText(getContext(), "Unsubscribed Successfully", Toast.LENGTH_LONG).show();
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError volleyError) {
+
+                        // Hiding the progress dialog after all task complete.
+
+                        // Showing error message if something goes wrong.
+                        Toast.makeText(getContext(), volleyError.toString(), Toast.LENGTH_LONG).show();
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams()  {
+
+                // Creating Map String Params.
+                Map<String, String> params = new HashMap<String, String>();
+
+                // Adding All values to Params.
+                params.put("subscriber_uid", subscriber_uid);
+                params.put("unique_store_id", unique_store_id);
+                Log.v("subs1",subscriber_uid);
+                Log.v("sub2",unique_store_id);
+
+                return params;
+            }
+
+        };
+        AppController.getInstance().addToRequestQueue(stringRequest);
+
+    }
+
+    private void getSubscribed() {
+        if (session.isLoggedIn()){
+   Toast.makeText(getContext(),sellerUserName,Toast.LENGTH_LONG).show();
+       String subscriber_uid=db.getUserDetails().get("email"),unique_store_id= sellerUserName;
+        userSubscription(subscriber_uid,unique_store_id);
+        }
+        else
+            Toast.makeText(getContext(),"Pls logged in to subscribe",Toast.LENGTH_SHORT).show();
+    }
+    private void userSubscription( final String subscriber_uid, final String unique_store_id){
+
+        // another try
+        // Creating string request with post method.
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, AppConfig.URL_SUBSCRIPTION,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String ServerResponse) {
+                     sub_btn.setText("UNSUBSCRIBE");
+                        hasSubscribed = true;
+                        // Hiding the progress dialog after all task complete.
+
+                        // Showing response message coming from server.
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError volleyError) {
+
+                        // Hiding the progress dialog after all task complete.
+
+                        // Showing error message if something goes wrong.
+                        Toast.makeText(getContext(), volleyError.toString(), Toast.LENGTH_LONG).show();
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams()  {
+
+                // Creating Map String Params.
+                Map<String, String> params = new HashMap<String, String>();
+
+                // Adding All values to Params.
+                params.put("subscriber_uid", subscriber_uid);
+                params.put("unique_store_id", unique_store_id);
+                Log.v("subs1",subscriber_uid);
+                Log.v("sub2",unique_store_id);
+
+                return params;
+            }
+
+        };
+        AppController.getInstance().addToRequestQueue(stringRequest);
+
+
+
+
+
+
+
+
+
+
+
+
+
     }
 
     /**
