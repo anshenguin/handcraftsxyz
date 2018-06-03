@@ -1,13 +1,16 @@
 package com.kinitoapps.handcraftsxyz.fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -15,6 +18,9 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.kinitoapps.handcraftsxyz.R;
+import com.kinitoapps.handcraftsxyz.activities.LoginActivity;
+import com.kinitoapps.handcraftsxyz.activities.TestClassForLogOut;
+import com.kinitoapps.handcraftsxyz.helper.SessionManager;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -39,6 +45,8 @@ public class StorePageFragment extends Fragment {
     private String mParam1;
     private String mParam2;
     String sellerUserName;
+    private SessionManager session;
+
     TextView storeName,storeUserName,storeSubs;
     private OnFragmentInteractionListener mListener;
     private static final String URL_STORES = "http://handicraft-com.stackstaging.com/myapi/api_all_stores.php";
@@ -90,6 +98,7 @@ public class StorePageFragment extends Fragment {
         loadStoreInfo();
         return root;
     }
+
 
     private void loadStoreInfo() {
         StringRequest stringRequest = new StringRequest(Request.Method.GET, URL_STORES,

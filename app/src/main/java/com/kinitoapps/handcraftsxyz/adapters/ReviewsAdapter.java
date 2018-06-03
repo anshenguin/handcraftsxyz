@@ -37,8 +37,16 @@ public class ReviewsAdapter extends RecyclerView.Adapter<ReviewsAdapter.ViewHold
     public void onBindViewHolder(ViewHolder holder, int position) {
         Review review = reviewList.get(position);
         holder.textViewName.setText(review.getRevName());
-        holder.textViewStars.setText(Integer.toString(review.getStars()));
-        holder.textViewText.setText(review.getRevText());
+        StringBuilder stars= new StringBuilder();
+        for(int i = 0 ; i < review.getStars() ; i++){
+            stars.append("★");
+        }
+        holder.textViewStars.setText(stars);
+        if(review.getRevText().equals("null"))
+            holder.textViewText.setVisibility(View.GONE);
+        else
+            holder.textViewText.setText(review.getRevText());
+
     }
 
 

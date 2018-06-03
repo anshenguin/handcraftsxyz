@@ -248,10 +248,10 @@ public class ProductPageFragment extends Fragment {
 
                                 //getting product object from json array
                                 JSONObject review = array.getJSONObject(i);
-                                if(review.getString("text").isEmpty())
+                                if(review.getString("text").equals("null"))
                                     reviewList.add(new Review(
                                             review.getString("name"),
-                                            "i was empty",
+                                            "null",
                                             review.getInt("stars")));
                                 else
                                 reviewList.add(new Review(
