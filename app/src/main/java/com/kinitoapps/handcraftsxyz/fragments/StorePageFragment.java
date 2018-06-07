@@ -109,7 +109,6 @@ public class StorePageFragment extends Fragment implements View.OnClickListener{
         sub_btn.setOnClickListener(this);
         session = new SessionManager(getContext());
         loadStoreInfo();
-        checkSub();
         return root;
     }
 
@@ -181,12 +180,24 @@ public class StorePageFragment extends Fragment implements View.OnClickListener{
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        if(session.isLoggedIn())
+            checkSub();
+    }
+
+    @Override
     public void onClick(View view) {
-        if (view==sub_btn) {
-            if (!hasSubscribed)
-                getSubscribed();
-            else
-                getUnsubcribed();
+        if(session.isLoggedIn()) {
+            if (view == sub_btn) {
+                if (!hasSubscribed)
+                    getSubscribed();
+                else
+                    getUnsubscribed();
+            }
+        }
+        else{
+            Toast.makeText(getActivity(), "Please Sign in to Subscribe!", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -248,9 +259,8 @@ public class StorePageFragment extends Fragment implements View.OnClickListener{
 
     }
 
-    private void getUnsubcribed() {
+    private void getUnsubscribed() {
         final String subscriber_uid=db.getUserDetails().get("email"),unique_store_id= sellerUserName;
-        Toast.makeText(getContext(),"Unsubscribed succesfully",Toast.LENGTH_SHORT).show();
         StringRequest stringRequest = new StringRequest(Request.Method.POST, AppConfig.URL_UNSUBSCRIPTION,
                 new Response.Listener<String>() {
                     @Override
@@ -295,12 +305,10 @@ public class StorePageFragment extends Fragment implements View.OnClickListener{
 
     private void getSubscribed() {
         if (session.isLoggedIn()){
-            Toast.makeText(getContext(),sellerUserName,Toast.LENGTH_LONG).show();
             String subscriber_uid=db.getUserDetails().get("email"),unique_store_id= sellerUserName;
             userSubscription(subscriber_uid,unique_store_id);
         }
-        else
-            Toast.makeText(getContext(),"Pls logged in to subscribe",Toast.LENGTH_SHORT).show();
+
     }
     private void userSubscription( final String subscriber_uid, final String unique_store_id){
 
@@ -313,7 +321,7 @@ public class StorePageFragment extends Fragment implements View.OnClickListener{
                         sub_btn.setText("UNSUBSCRIBE");
                         hasSubscribed = true;
                         // Hiding the progress dialog after all task complete.
-
+                        Toast.makeText(getActivity(), "Subscribed Successfully!", Toast.LENGTH_SHORT).show();
                         // Showing response message coming from server.
                     }
                 },

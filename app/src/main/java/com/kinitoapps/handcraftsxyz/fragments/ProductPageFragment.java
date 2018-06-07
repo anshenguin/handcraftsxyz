@@ -8,10 +8,12 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.android.volley.Request;
@@ -30,6 +32,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,12 +53,15 @@ public class ProductPageFragment extends Fragment {
     ViewPager viewPager;
     ViewPagerAdapterProductImages viewPagerAdapter;
     String productID, sellerName;
-    TextView productName, productAbout, productBy, productPrice;
+    TextView productName, productAbout, productBy, productPrice,numberOfReviews,avgStar;
     private static final String URL_PRODUCTS = "http://handicraft-com.stackstaging.com/myapi/api_all_products.php?prod=";
     private static final String URL_REVIEWS = "http://handicraft-com.stackstaging.com/myapi/api_reviews.php?prod=";
+    private static final String URL_REVIEW_MATH = "http://handicraft-com.stackstaging.com/myapi/review_math.php?prod=";
     RecyclerView recyclerView;
     ReviewsAdapter reviewsAdapter;
     List<Review> reviewList;
+    JSONObject reviewInfo;
+    View bar5,bar4,bar3,bar2,bar1;
 
     // TODO: Rename and change types of parameters
     private String mParam1;
@@ -112,6 +118,8 @@ public class ProductPageFragment extends Fragment {
         productPrice = view.findViewById(R.id.productPrice);
         productBy = view.findViewById(R.id.sellerName);
         recyclerView = view.findViewById(R.id.recycler_all_reviews);
+        numberOfReviews = view.findViewById(R.id.number_of_reviews);
+        avgStar = view.findViewById(R.id.star_big_text);
         recyclerView.setOnFlingListener(new RecyclerView.OnFlingListener() {
             @Override
             public boolean onFling(int velocityX, int velocityY) {
@@ -123,6 +131,11 @@ public class ProductPageFragment extends Fragment {
         recyclerView.setLayoutManager(mLayoutManager);
         reviewsAdapter = new ReviewsAdapter(getActivity(),reviewList);
         recyclerView.setAdapter(reviewsAdapter);
+        bar1 = view.findViewById(R.id.bar1);
+        bar2 = view.findViewById(R.id.bar2);
+        bar3 = view.findViewById(R.id.bar3);
+        bar4 = view.findViewById(R.id.bar4);
+        bar5 = view.findViewById(R.id.bar5);
 
         productAbout = view.findViewById(R.id.productAbout);
         productBy.setOnClickListener(new View.OnClickListener() {
@@ -189,7 +202,7 @@ public class ProductPageFragment extends Fragment {
         * Then we have a Response Listener and a Error Listener
         * In response listener we will get the JSON response as a String
         * */
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, URL_PRODUCTS+productID,
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, URL_PRODUCTS + productID,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -197,14 +210,14 @@ public class ProductPageFragment extends Fragment {
                             //converting the string to json array object
                             JSONArray array = new JSONArray(response);
                             //traversing through all the object
-                                //getting product object from json array
-                                JSONObject product = array.getJSONObject(0);
-                                //adding the product to product list
-                                    productName.setText(product.getString("productName"));
-                                    productAbout.setText(product.getString("about"));
-                                    sellerName = product.getString("sellerName");
-                                    productBy.setText(sellerName);
-                                    productPrice.setText("₹ "+product.getString("price"));
+                            //getting product object from json array
+                            JSONObject product = array.getJSONObject(0);
+                            //adding the product to product list
+                            productName.setText(product.getString("productName"));
+                            productAbout.setText(product.getString("about"));
+                            sellerName = product.getString("sellerName");
+                            productBy.setText(sellerName);
+                            productPrice.setText("₹ " + product.getString("price"));
 
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -220,6 +233,9 @@ public class ProductPageFragment extends Fragment {
 
         //adding our string request to queue
         Volley.newRequestQueue(getActivity()).add(stringRequest);
+
+
+
     }
     private void loadReviews() {
 
@@ -230,7 +246,7 @@ public class ProductPageFragment extends Fragment {
         * Then we have a Response Listener and a Error Listener
         * In response listener we will get the JSON response as a String
         * */
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, URL_REVIEWS+productID,
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, URL_REVIEWS + productID,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -274,8 +290,145 @@ public class ProductPageFragment extends Fragment {
                     }
                 });
 
-        //adding our stringrequest to queue
+        //adding our string request to queue
         Volley.newRequestQueue(getActivity()).add(stringRequest);
+        StringRequest request = new StringRequest(Request.Method.GET, URL_REVIEW_MATH + productID,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+                            //converting the string to json array object
+
+                            //traversing through all the object
+                            //getting product object from json array
+                            reviewInfo = new JSONObject(response);
+                            //adding the product to product list
+                            List<Integer> array = new ArrayList<>();
+                            array.add(reviewInfo.getInt("one_star"));
+                            array.add(reviewInfo.getInt("two_star"));
+                            array.add(reviewInfo.getInt("three_star"));
+                            array.add(reviewInfo.getInt("four_star"));
+                            array.add(reviewInfo.getInt("five_star"));
+                            numberOfReviews.setText(String.valueOf(reviewInfo.getInt("total")));
+                            String max = "five_star";
+                            int max_num = array.get(4);
+                            int sum = array.get(4)*5;
+                            for(int i = 3 ; i >= 0 ; i--){
+                                sum = sum + (array.get(i)*(i+1));
+                                if(max_num<array.get(i)){
+                                    if(i==3) {
+                                        max = "four_star";
+                                    }
+                                    else if(i==2) {
+                                        max = "three_star";
+                                    }
+                                    else if(i==1) {
+                                        max = "two_star";
+                                    }
+                                    else {
+                                        max = "one_star";
+                                    }
+                                    max_num = array.get(i);
+                                }
+                            }
+
+                            if(max_num!=0) {
+                                //TODO: REMOVE ERRORS FOR DENOMINATOR ZERO
+                                avgStar.setText(String.format("%.1f", (float) (sum / reviewInfo.getInt("total")))+"★");
+
+
+                                float difference;
+                                switch (max) {
+                                    case "five_star":
+                                        bar5.setLayoutParams(new LinearLayout.LayoutParams(
+                                                200,
+                                                11));
+                                        difference = (float) array.get(3) / array.get(4);
+                                        bar4.setLayoutParams(new LinearLayout.LayoutParams((int) (200 - (200 * (difference))), 14));
+                                        difference = (float) array.get(2) / array.get(4);
+                                        bar3.setLayoutParams(new LinearLayout.LayoutParams((int) (200 - (200 * (difference))), 14));
+                                        difference = (float) array.get(1) / array.get(4);
+                                        bar2.setLayoutParams(new LinearLayout.LayoutParams((int) (200 - (200 * (difference))), 14));
+                                        difference = (float) array.get(0) / array.get(4);
+                                        bar1.setLayoutParams(new LinearLayout.LayoutParams((int) (200 - (200 * (difference))), 14));
+
+                                        break;
+                                    case "four_star":
+                                        bar4.setLayoutParams(new LinearLayout.LayoutParams(
+                                                200,
+                                                11));
+                                        difference = (float) array.get(4) / array.get(3);
+                                        bar5.setLayoutParams(new LinearLayout.LayoutParams((int) (200 - 200 * (difference)), 14));
+                                        difference = (float) array.get(2) / array.get(3);
+                                        bar3.setLayoutParams(new LinearLayout.LayoutParams((int) (200 - 200 * (difference)), 14));
+                                        difference = (float) array.get(1) / array.get(3);
+                                        bar2.setLayoutParams(new LinearLayout.LayoutParams((int) (200 - 200 * (difference)), 14));
+                                        difference = (float) array.get(0) / array.get(3);
+                                        bar1.setLayoutParams(new LinearLayout.LayoutParams((int) (200 - 200 * (difference)), 14));
+                                        break;
+                                    case "three_star":
+                                        bar3.setLayoutParams(new LinearLayout.LayoutParams(
+                                                200,
+                                                11));
+                                        difference = (float) array.get(4) / array.get(2);
+                                        bar5.setLayoutParams(new LinearLayout.LayoutParams((int) (200 - 200 * (difference)), 14));
+                                        difference = (float) array.get(3) / array.get(2);
+                                        bar4.setLayoutParams(new LinearLayout.LayoutParams((int) (200 - 200 * (difference)), 14));
+                                        difference = (float) array.get(1) / array.get(2);
+                                        bar2.setLayoutParams(new LinearLayout.LayoutParams((int) (200 - 200 * (difference)), 14));
+                                        difference = (float) array.get(0) / array.get(2);
+                                        bar1.setLayoutParams(new LinearLayout.LayoutParams((int) (200 - 200 * (difference)), 14));
+                                        break;
+                                    case "two_star":
+                                        bar2.setLayoutParams(new LinearLayout.LayoutParams(
+                                                200,
+                                                11));
+                                        difference = (float) array.get(4) / array.get(1);
+                                        bar5.setLayoutParams(new LinearLayout.LayoutParams((int) (200 - 200 * (difference)), 14));
+                                        difference = (float) array.get(3) / array.get(1);
+                                        bar4.setLayoutParams(new LinearLayout.LayoutParams((int) (200 - 200 * (difference)), 14));
+                                        difference = (float) array.get(2) / array.get(1);
+                                        bar3.setLayoutParams(new LinearLayout.LayoutParams((int) (200 - 200 * (difference)), 14));
+                                        difference = (float) array.get(0) / array.get(1);
+                                        bar1.setLayoutParams(new LinearLayout.LayoutParams((int) (200 - 200 * (difference)), 14));
+                                        break;
+                                    default:
+                                        bar1.setLayoutParams(new LinearLayout.LayoutParams(
+                                                200,
+                                                11));
+                                        difference = (float) array.get(4) / array.get(0);
+                                        bar5.setLayoutParams(new LinearLayout.LayoutParams((int) (200 - 200 * (difference)), 14));
+                                        difference = (float) array.get(3) / array.get(0);
+                                        bar4.setLayoutParams(new LinearLayout.LayoutParams((int) (200 - 200 * (difference)), 14));
+                                        difference = (float) array.get(2) / array.get(0);
+                                        bar3.setLayoutParams(new LinearLayout.LayoutParams((int) (200 - 200 * (difference)), 14));
+                                        difference = (float) array.get(1) / array.get(0);
+                                        bar2.setLayoutParams(new LinearLayout.LayoutParams((int) (200 - 200 * (difference)), 14));
+                                        break;
+                                }
+                            }
+                            else{
+                                avgStar.setText("0.0★");
+                                numberOfReviews.setText("0");
+
+                            }
+
+
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                    }
+                });
+
+        //adding our string request to queue
+        Volley.newRequestQueue(getActivity()).add(request);
     }
 
 
