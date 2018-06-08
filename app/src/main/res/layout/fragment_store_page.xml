@@ -76,12 +76,11 @@
             app:layout_constraintStart_toEndOf="@+id/sub_button"
             app:layout_constraintTop_toBottomOf="@+id/store_dp" />
 
-        <ImageView
+        <android.support.v7.widget.RecyclerView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:src="@drawable/layout_comin_soon"
             app:layout_constraintTop_toBottomOf="@id/sub_button"
-            android:scaleType="centerCrop"/>
+            android:id="@+id/store_recycler_view"/>
 
 
 
