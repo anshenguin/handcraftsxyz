@@ -1,10 +1,11 @@
 package com.kinitoapps.handcraftsxyz.fragments;
 
 import android.content.Context;
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,19 +13,16 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.kinitoapps.handcraftsxyz.AppConfig;
 import com.kinitoapps.handcraftsxyz.AppController;
+import com.kinitoapps.handcraftsxyz.Product;
 import com.kinitoapps.handcraftsxyz.R;
-import com.kinitoapps.handcraftsxyz.activities.LoginActivity;
-import com.kinitoapps.handcraftsxyz.activities.RegisterActivity;
+import com.kinitoapps.handcraftsxyz.adapters.ProductStorePageAdapter;
 import com.kinitoapps.handcraftsxyz.helper.SQLiteHandler;
 import com.kinitoapps.handcraftsxyz.helper.SessionManager;
 
@@ -32,8 +30,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+
 
 
 /**
@@ -58,11 +60,15 @@ public class StorePageFragment extends Fragment implements View.OnClickListener{
     String sellerUserName;
     private SessionManager session;
     TextView storeName,storeUserName,storeSubs;
+    RecyclerView recyclerView;
     Button sub_btn;
+    List<Product> productList;
     private SQLiteHandler db;
 
     private OnFragmentInteractionListener mListener;
-    private static final String URL_STORES = "http://handicraft-com.stackstaging.com/myapi/api_all_stores.php";
+    private static final String URL_STORES = "http://handicraft-com.stackstaging.com/myapi/api_all_stores.php?sto=";
+    private static final String URL_PRODUCTS ="http://handicraft-com.stackstaging.com/myapi/api_all_products.php?sto=";
+
 
     public StorePageFragment() {
         // Required empty public constructor
@@ -105,20 +111,41 @@ public class StorePageFragment extends Fragment implements View.OnClickListener{
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View root = inflater.inflate(R.layout.fragment_store_page, container, false);
+        productList = new ArrayList<>();
         storeName = root.findViewById(R.id.store_name);
         storeSubs = root.findViewById(R.id.store_subs);
         storeUserName = root.findViewById(R.id.store_username);
-        sub_btn=root.findViewById(R.id.sub_button);
+        sub_btn= root.findViewById(R.id.sub_button);
         db= new SQLiteHandler(getContext());
         sub_btn.setOnClickListener(this);
         session = new SessionManager(getContext());
         loadStoreInfo();
-        checkSub();
+        recyclerView = root.findViewById(R.id.store_recycler_view);
+        recyclerView.setLayoutManager(new GridLayoutManager(getActivity(), 2));
+        recyclerView.setOnFlingListener(new RecyclerView.OnFlingListener() {
+            @Override
+            public boolean onFling(int velocityX, int velocityY) {
+                recyclerView.dispatchNestedFling(velocityX, velocityY, false);
+                return false;
+            }
+        });
+        recyclerView.setAdapter(new ProductStorePageAdapter(getActivity(),productList));
+
+        loadProducts();
+
         return root;
     }
 
-    private void loadStoreInfo() {
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, URL_STORES,
+    private void loadProducts() {
+
+        /*
+        * Creating a String Request
+        * The request type is GET defined by first parameter
+        * The URL is defined in the second parameter
+        * Then we have a Response Listener and a Error Listener
+        * In response listener we will get the JSON response as a String
+        * */
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, URL_PRODUCTS + sellerUserName,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -133,12 +160,52 @@ public class StorePageFragment extends Fragment implements View.OnClickListener{
                                 JSONObject product = array.getJSONObject(i);
 
                                 //adding the product to product list
-                                if(product.getString("username").equals(sellerUserName)){
+                                productList.add(new Product(
+                                        product.getInt("id"),
+                                        product.getString("primaryImage"),
+                                        product.getString("productName"),
+                                        product.getDouble("price"),
+                                        product.getString("sellerName"),
+                                        product.getString("productID")
+
+                                ));
+                            }
+
+                            ProductStorePageAdapter adapter = new ProductStorePageAdapter(getActivity(), productList);
+                            recyclerView.setAdapter(adapter);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                    }
+                });
+
+        //adding our stringrequest to queue
+        Volley.newRequestQueue(getActivity()).add(stringRequest);
+    }
+    private void loadStoreInfo() {
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, URL_STORES + sellerUserName,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+                            //converting the string to json array object
+                            JSONArray array = new JSONArray(response);
+
+                            //traversing through all the object
+                            for (int i = 0; i < array.length(); i++) {
+                                //getting product object from json array
+                                JSONObject product = array.getJSONObject(i);
+                                //adding the product to product list
                                     storeName.setText(product.getString("name"));
                                     storeUserName.setText(product.getString("username"));
                                     storeSubs.setText(product.getString("subs")+" subs");
-                                    break;
-                                }
+
                             }
 
                         } catch (JSONException e) {
@@ -185,12 +252,24 @@ public class StorePageFragment extends Fragment implements View.OnClickListener{
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        if(session.isLoggedIn())
+            checkSub();
+    }
+
+    @Override
     public void onClick(View view) {
-        if (view==sub_btn) {
-            if (!hasSubscribed)
-                getSubscribed();
-            else
-                getUnsubcribed();
+        if(session.isLoggedIn()) {
+            if (view == sub_btn) {
+                if (!hasSubscribed)
+                    getSubscribed();
+                else
+                    getUnsubscribed();
+            }
+        }
+        else{
+            Toast.makeText(getActivity(), "Please Sign in to Subscribe!", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -252,9 +331,8 @@ public class StorePageFragment extends Fragment implements View.OnClickListener{
 
     }
 
-    private void getUnsubcribed() {
+    private void getUnsubscribed() {
         final String subscriber_uid=db.getUserDetails().get("email"),unique_store_id= sellerUserName;
-        Toast.makeText(getContext(),"Unsubscribed succesfully",Toast.LENGTH_SHORT).show();
         StringRequest stringRequest = new StringRequest(Request.Method.POST, AppConfig.URL_UNSUBSCRIPTION,
                 new Response.Listener<String>() {
                     @Override
@@ -299,12 +377,10 @@ public class StorePageFragment extends Fragment implements View.OnClickListener{
 
     private void getSubscribed() {
         if (session.isLoggedIn()){
-   Toast.makeText(getContext(),sellerUserName,Toast.LENGTH_LONG).show();
-       String subscriber_uid=db.getUserDetails().get("email"),unique_store_id= sellerUserName;
-        userSubscription(subscriber_uid,unique_store_id);
+            String subscriber_uid=db.getUserDetails().get("email"),unique_store_id= sellerUserName;
+            userSubscription(subscriber_uid,unique_store_id);
         }
-        else
-            Toast.makeText(getContext(),"Pls logged in to subscribe",Toast.LENGTH_SHORT).show();
+
     }
     private void userSubscription( final String subscriber_uid, final String unique_store_id){
 
@@ -314,10 +390,10 @@ public class StorePageFragment extends Fragment implements View.OnClickListener{
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String ServerResponse) {
-                     sub_btn.setText("UNSUBSCRIBE");
+                        sub_btn.setText("UNSUBSCRIBE");
                         hasSubscribed = true;
                         // Hiding the progress dialog after all task complete.
-
+                        Toast.makeText(getActivity(), "Subscribed Successfully!", Toast.LENGTH_SHORT).show();
                         // Showing response message coming from server.
                     }
                 },
@@ -348,19 +424,6 @@ public class StorePageFragment extends Fragment implements View.OnClickListener{
 
         };
         AppController.getInstance().addToRequestQueue(stringRequest);
-
-
-
-
-
-
-
-
-
-
-
-
-
     }
 
     /**
