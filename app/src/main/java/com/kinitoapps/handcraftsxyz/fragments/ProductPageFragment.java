@@ -12,21 +12,27 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.kinitoapps.handcraftsxyz.AppConfig;
+import com.kinitoapps.handcraftsxyz.AppController;
 import com.kinitoapps.handcraftsxyz.Product;
 import com.kinitoapps.handcraftsxyz.R;
 import com.kinitoapps.handcraftsxyz.Review;
 import com.kinitoapps.handcraftsxyz.adapters.NewArrivalProductsAdapter;
 import com.kinitoapps.handcraftsxyz.adapters.ReviewsAdapter;
 import com.kinitoapps.handcraftsxyz.adapters.ViewPagerAdapterProductImages;
+import com.kinitoapps.handcraftsxyz.helper.SQLiteHandler;
+import com.kinitoapps.handcraftsxyz.helper.SessionManager;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -34,7 +40,13 @@ import org.json.JSONObject;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import static com.kinitoapps.handcraftsxyz.AppConfig.URL_PRODUCTS;
+import static com.kinitoapps.handcraftsxyz.AppConfig.URL_REVIEWS;
+import static com.kinitoapps.handcraftsxyz.AppConfig.URL_REVIEW_MATH;
 
 
 /**
@@ -50,13 +62,14 @@ public class ProductPageFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
+    private SessionManager session;
+    private boolean hasNotLiked=true;
     ViewPager viewPager;
+    private SQLiteHandler db;
     ViewPagerAdapterProductImages viewPagerAdapter;
     String productID, sellerName;
     TextView productName, productAbout, productBy, productPrice,numberOfReviews,avgStar;
-    private static final String URL_PRODUCTS = "http://handicraft-com.stackstaging.com/myapi/api_all_products.php?prod=";
-    private static final String URL_REVIEWS = "http://handicraft-com.stackstaging.com/myapi/api_reviews.php?prod=";
-    private static final String URL_REVIEW_MATH = "http://handicraft-com.stackstaging.com/myapi/review_math.php?prod=";
+     Button like_btn;
     RecyclerView recyclerView;
     ReviewsAdapter reviewsAdapter;
     List<Review> reviewList;
@@ -111,6 +124,8 @@ public class ProductPageFragment extends Fragment {
         // Inflate the layout for this fragment
         final View view = inflater.inflate(R.layout.fragment_product_page, container, false);
         viewPager = view.findViewById(R.id.viewpager);
+        session= new SessionManager(getContext());
+        db=new SQLiteHandler(getContext());
         reviewList = new ArrayList<>();
         final ImageView arrowDown = view.findViewById(R.id.about_product_head_i);
         TextView about_header_t = view.findViewById(R.id.about_product_head_t);
@@ -118,6 +133,7 @@ public class ProductPageFragment extends Fragment {
         productPrice = view.findViewById(R.id.productPrice);
         productBy = view.findViewById(R.id.sellerName);
         recyclerView = view.findViewById(R.id.recycler_all_reviews);
+        like_btn=view.findViewById(R.id.like_button);
         numberOfReviews = view.findViewById(R.id.number_of_reviews);
         avgStar = view.findViewById(R.id.star_big_text);
         recyclerView.setOnFlingListener(new RecyclerView.OnFlingListener() {
@@ -136,6 +152,22 @@ public class ProductPageFragment extends Fragment {
         bar3 = view.findViewById(R.id.bar3);
         bar4 = view.findViewById(R.id.bar4);
         bar5 = view.findViewById(R.id.bar5);
+        like_btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(session.isLoggedIn()) {
+                    if (view == like_btn) {
+                        if (!hasNotLiked)
+                            LikeIt();
+                        else
+                            UnlikeIt();
+                    }
+                }
+                else{
+                    Toast.makeText(getActivity(), "Please Sign in !", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
 
         productAbout = view.findViewById(R.id.productAbout);
         productBy.setOnClickListener(new View.OnClickListener() {
@@ -193,6 +225,95 @@ public class ProductPageFragment extends Fragment {
         return view;
 
     }
+
+    private void UnlikeIt() {
+        final String subscriber_uid=db.getUserDetails().get("email");
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, AppConfig.URL_UNLIKES,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String ServerResponse) {
+                        like_btn.setText("LIKE");
+                        hasNotLiked = false;
+                        // Hiding the progress dialog after all task complete.
+
+                        // Showing response message coming from server.
+                       // Toast.makeText(getContext(), "Unsubscribed Successfully", Toast.LENGTH_LONG).show();
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError volleyError) {
+
+                        // Hiding the progress dialog after all task complete.
+
+                        // Showing error message if something goes wrong.
+                        Toast.makeText(getContext(), volleyError.toString(), Toast.LENGTH_LONG).show();
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams()  {
+
+                // Creating Map String Params.
+                Map<String, String> params = new HashMap<String, String>();
+
+                // Adding All values to Params.
+                params.put("subscriber_uid", subscriber_uid);
+                params.put("unique_store_id", productID);
+
+                return params;
+            }
+
+        };
+        AppController.getInstance().addToRequestQueue(stringRequest);
+
+
+
+
+
+    }
+
+    private void LikeIt() {
+        final String subscriber_uid=db.getUserDetails().get("email");
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, AppConfig.URL_LIKESANDUNLIKES,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String ServerResponse) {
+                        like_btn.setText("LIKED");
+                        hasNotLiked = true;
+                        // Hiding the progress dialog after all task complete.
+                       // Toast.makeText(getActivity(), "Subscribed Successfully!", Toast.LENGTH_SHORT).show();
+                        // Showing response message coming from server.
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError volleyError) {
+
+                        // Hiding the progress dialog after all task complete.
+
+                        // Showing error message if something goes wrong.
+                        Toast.makeText(getContext(), volleyError.toString(), Toast.LENGTH_LONG).show();
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams()  {
+
+                // Creating Map String Params.
+                Map<String, String> params = new HashMap<String, String>();
+
+                // Adding All values to Params.
+                params.put("subscriber_uid", subscriber_uid);
+                params.put("unique_store_id", productID);
+
+
+                return params;
+            }
+
+        };
+        AppController.getInstance().addToRequestQueue(stringRequest);
+    }
+
+
     private void populateProductInfo() {
 
         /*
@@ -454,6 +575,68 @@ public class ProductPageFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+    @Override
+    public void onResume() {
+        super.onResume();
+        if(session.isLoggedIn())
+            hasAlreadyLiked();
+    }
+
+    private void hasAlreadyLiked() {
+
+        final String subscriber_uid=db.getUserDetails().get("email");
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, AppConfig.URL_HAS_ALREADY_LIKED,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String ServerResponse) {
+                        try {
+                            JSONObject obj = new JSONObject(ServerResponse);
+                            if(obj.getString("subscribed").equals("TRUE")) {
+                                hasNotLiked = true;
+                                like_btn.setText("LIKED");
+                            }
+                            else {
+                                hasNotLiked = false;
+                                like_btn.setText("LIKE");
+
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+
+                        // Hiding the progress dialog after all task complete.
+
+                        // Showing response message coming from server.
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError volleyError) {
+
+                        // Hiding the progress dialog after all task complete.
+
+                        // Showing error message if something goes wrong.
+                        Toast.makeText(getContext(), volleyError.toString(), Toast.LENGTH_LONG).show();
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams()  {
+
+                // Creating Map String Params.
+                Map<String, String> params = new HashMap<String, String>();
+
+                // Adding All values to Params.
+                params.put("subscriber_uid", subscriber_uid);
+                params.put("unique_store_id", productID);
+                Log.v("subs1",subscriber_uid);
+                return params;
+            }
+
+        };
+        AppController.getInstance().addToRequestQueue(stringRequest);
+
     }
 
     /**

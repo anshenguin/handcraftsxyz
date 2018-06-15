@@ -13,5 +13,12 @@ public class AppConfig {
     public  static  String URL_SUBSCRIPTION = "http://handicraft-com.stackstaging.com/myapi/android_login_api/subscribers.php";
     public  static  String URL_UNSUBSCRIPTION = "http://handicraft-com.stackstaging.com/myapi/android_login_api/unsubscribers.php";
     public  static  String URL_CHECKSUB = "http://handicraft-com.stackstaging.com/myapi/android_login_api/checkIfSubscribed.php";
+    public static final String URL_PRODUCTS = "http://handicraft-com.stackstaging.com/myapi/api_all_products.php?prod=";
+    public static final String URL_REVIEWS = "http://handicraft-com.stackstaging.com/myapi/api_reviews.php?prod=";
+    public static final String URL_REVIEW_MATH = "http://handicraft-com.stackstaging.com/myapi/review_math.php?prod=";
+    public  static  String URL_LIKESANDUNLIKES = "http://handicraft-com.stackstaging.com/myapi/android_login_api/likes.php";
+    public  static  String URL_HAS_ALREADY_LIKED = "http://handicraft-com.stackstaging.com/myapi/android_login_api/checkIfAlreadyLiked.php";
+    public  static  String URL_UNLIKES = "http://handicraft-com.stackstaging.com/myapi/android_login_api/unlikes.php";
+
 
 }
