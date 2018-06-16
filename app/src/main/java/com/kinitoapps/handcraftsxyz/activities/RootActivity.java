@@ -46,6 +46,8 @@ public class RootActivity extends AppCompatActivity
     int selected;
     boolean mDrawerItemClicked = false;
     SessionManager session;
+    boolean discovered = false,isProduct = false;
+    String discoveredID;
     TextView bannername,signup;
     LinearLayout loggedinoptions;
     private SQLiteHandler db;
@@ -223,48 +225,27 @@ public class RootActivity extends AppCompatActivity
 
     }
 
+
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
         if (requestCode == 1) {
             if(resultCode == Activity.RESULT_OK){
+                discovered = true;
                 //String result=data.getStringExtra("result");
                 if(data.getStringExtra("product")!=null){
-                    android.support.v4.app.Fragment fragment = null;
-                    Class fragmentClass = null;
-                    fragmentClass = ProductPageFragment.class;
-                    try {
-                        fragment = (android.support.v4.app.Fragment) fragmentClass.newInstance();
-                        Bundle b = new Bundle();
-                        b.putString("productID",data.getStringExtra("product"));
-                        fragment.setArguments(b);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    //ERROR
-                    FragmentManager fragmentManager = getSupportFragmentManager();
-                    fragmentManager.beginTransaction().replace(R.id.main_content, fragment, "productPage").addToBackStack("productPage").commit();
+                    discoveredID = data.getStringExtra("product");
+                    isProduct = true;
                 }
                 else{
-                    Class fragmentClass = null;
-                    android.support.v4.app.Fragment fragment = null;
-
-                    fragmentClass = StorePageFragment.class;
-                    try {
-                        fragment = (android.support.v4.app.Fragment) fragmentClass.newInstance();
-                        Bundle b = new Bundle();
-                        b.putString("sellerName",data.getStringExtra("store"));
-                        fragment.setArguments(b);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                    FragmentManager fragmentManager = getSupportFragmentManager();
-
-                    fragmentManager.beginTransaction().replace(R.id.main_content, fragment,"storePage").addToBackStack("storePage").commit();
+                    discoveredID = data.getStringExtra("store");
+                    isProduct = false;
                 }
             }
             if (resultCode == Activity.RESULT_CANCELED) {
                 //Write your code if there's no result
+                discovered = false;
                 Toast.makeText(this, "cancelled", Toast.LENGTH_SHORT).show();
             }
         }
@@ -288,6 +269,45 @@ public class RootActivity extends AppCompatActivity
             loggedinoptions.setVisibility(View.GONE);
             bannername.setVisibility(View.GONE);
             signup.setVisibility(View.VISIBLE);
+        }
+
+        if(discovered){
+            if(isProduct){
+                android.support.v4.app.Fragment fragment = null;
+                    Class fragmentClass = null;
+                    fragmentClass = ProductPageFragment.class;
+                    try {
+                        fragment = (android.support.v4.app.Fragment) fragmentClass.newInstance();
+                        Bundle b = new Bundle();
+                        b.putString("productID",discoveredID);
+                        fragment.setArguments(b);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    //ERROR
+                    FragmentManager fragmentManager = getSupportFragmentManager();
+                    fragmentManager.beginTransaction().replace(R.id.main_content, fragment, "productPage").addToBackStack("productPage").commit();
+
+            }
+            else{
+                    Class fragmentClass = null;
+                    android.support.v4.app.Fragment fragment = null;
+
+                    fragmentClass = StorePageFragment.class;
+                    try {
+                        fragment = (android.support.v4.app.Fragment) fragmentClass.newInstance();
+                        Bundle b = new Bundle();
+                        b.putString("sellerName",discoveredID);
+                        fragment.setArguments(b);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    FragmentManager fragmentManager = getSupportFragmentManager();
+
+                    fragmentManager.beginTransaction().replace(R.id.main_content, fragment,"storePage").addToBackStack("storePage").commit();
+
+            }
+            discovered = false;
         }
     }
 
