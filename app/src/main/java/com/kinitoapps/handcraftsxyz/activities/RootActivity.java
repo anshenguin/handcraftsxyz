@@ -1,5 +1,6 @@
 package com.kinitoapps.handcraftsxyz.activities;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
@@ -21,6 +22,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.kinitoapps.handcraftsxyz.fragments.AllPurposeProductListFragment;
 import com.kinitoapps.handcraftsxyz.fragments.HomeFragment;
@@ -191,12 +193,13 @@ public class RootActivity extends AppCompatActivity
                     }
 
                     else if(selected == 4){
-                        startActivity(new Intent(RootActivity.this,DiscoverActivity.class));
+                        startActivityForResult(new Intent(RootActivity.this,DiscoverActivity.class),1);
                     }
 
                     mDrawerItemClicked = false;
                 }
             }
+
 
             @Override
             public void onDrawerStateChanged(int newState) {
@@ -219,6 +222,53 @@ public class RootActivity extends AppCompatActivity
 
 
     }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (requestCode == 1) {
+            if(resultCode == Activity.RESULT_OK){
+                //String result=data.getStringExtra("result");
+                if(data.getStringExtra("product")!=null){
+                    android.support.v4.app.Fragment fragment = null;
+                    Class fragmentClass = null;
+                    fragmentClass = ProductPageFragment.class;
+                    try {
+                        fragment = (android.support.v4.app.Fragment) fragmentClass.newInstance();
+                        Bundle b = new Bundle();
+                        b.putString("productID",data.getStringExtra("product"));
+                        fragment.setArguments(b);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    //ERROR
+                    FragmentManager fragmentManager = getSupportFragmentManager();
+                    fragmentManager.beginTransaction().replace(R.id.main_content, fragment, "productPage").addToBackStack("productPage").commit();
+                }
+                else{
+                    Class fragmentClass = null;
+                    android.support.v4.app.Fragment fragment = null;
+
+                    fragmentClass = StorePageFragment.class;
+                    try {
+                        fragment = (android.support.v4.app.Fragment) fragmentClass.newInstance();
+                        Bundle b = new Bundle();
+                        b.putString("sellerName",data.getStringExtra("store"));
+                        fragment.setArguments(b);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    FragmentManager fragmentManager = getSupportFragmentManager();
+
+                    fragmentManager.beginTransaction().replace(R.id.main_content, fragment,"storePage").addToBackStack("storePage").commit();
+                }
+            }
+            if (resultCode == Activity.RESULT_CANCELED) {
+                //Write your code if there's no result
+                Toast.makeText(this, "cancelled", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }//onActivityResult
 
 
     @Override
