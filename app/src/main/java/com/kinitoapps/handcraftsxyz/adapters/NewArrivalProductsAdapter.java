@@ -2,11 +2,14 @@ package com.kinitoapps.handcraftsxyz.adapters;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -40,12 +43,12 @@ public class NewArrivalProductsAdapter extends RecyclerView.Adapter<NewArrivalPr
     @Override
     public NewArrivalProductsAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(mCtx);
-        View view = inflater.inflate(R.layout.product_layout, null);
+        View view = inflater.inflate(R.layout.layout_product, null);
         return new ViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(NewArrivalProductsAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(final ViewHolder holder, int position) {
         final Product product = productList.get(position);
 
         //loading the image
@@ -56,16 +59,32 @@ public class NewArrivalProductsAdapter extends RecyclerView.Adapter<NewArrivalPr
         holder.textViewTitle.setText(product.getProductName());
         holder.textViewBy.setText(product.getSellerName());
         holder.textViewPrice.setText(String.valueOf(product.getPrice()));
+        ViewTreeObserver vto = holder.textViewTitle.getViewTreeObserver();
+        vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
 
+            @Override
+            public void onGlobalLayout() {
+                ViewTreeObserver obs = holder.textViewTitle.getViewTreeObserver();
+                obs.removeGlobalOnLayoutListener(this);
+                if(holder.textViewTitle.getLineCount() > 2){
+                    Log.d("","Line["+holder.textViewTitle.getLineCount()+"]"+holder.textViewTitle.getText());
+                    int lineEndIndex = holder.textViewTitle.getLayout().getLineEnd(1);
+                    String text = holder.textViewTitle.getText().subSequence(0, lineEndIndex-3)+"...";
+                    holder.textViewTitle.setText(text);
+                    Log.d("","NewText:"+text);
+                }
+
+            }
+        });
         holder.imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 view.setPadding(24,24,24,24);
-                android.support.v4.app.Fragment fragment = null;
+                Fragment fragment = null;
                 Class fragmentClass = null;
                 fragmentClass = ProductPageFragment.class;
                 try {
-                    fragment = (android.support.v4.app.Fragment) fragmentClass.newInstance();
+                    fragment = (Fragment) fragmentClass.newInstance();
                     Bundle b = new Bundle();
                     b.putString("productID",product.getProductID());
                     fragment.setArguments(b);

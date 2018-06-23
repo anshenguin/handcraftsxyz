@@ -40,7 +40,7 @@ public class ProductStorePageAdapter extends RecyclerView.Adapter<ProductStorePa
     @Override
     public ProductStorePageAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(mCtx);
-        View view = inflater.inflate(R.layout.product_layout_instore, null);
+        View view = inflater.inflate(R.layout.layout_product_instore, null);
         return new ViewHolder(view);
     }
 
