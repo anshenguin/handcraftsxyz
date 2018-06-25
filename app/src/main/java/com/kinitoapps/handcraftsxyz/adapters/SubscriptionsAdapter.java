@@ -22,40 +22,35 @@ import com.kinitoapps.handcraftsxyz.fragments.ProductPageFragment;
 import java.util.List;
 
 /**
- * Created by HP INDIA on 05-Apr-18.
+ * Created by HP INDIA on 24-Jun-18.
  */
-public class NewArrivalProductsAdapter extends RecyclerView.Adapter<NewArrivalProductsAdapter.ViewHolder> {
 
+public class SubscriptionsAdapter extends RecyclerView.Adapter<SubscriptionsAdapter.ViewHolder> {
     private Context mCtx;
     private List<Product> productList;
     RootActivity activity;
 
-    public NewArrivalProductsAdapter(Context mCtx, List<Product> productList) {
+    public SubscriptionsAdapter(Context mCtx, List<Product> productList) {
         this.mCtx = mCtx;
         this.productList = productList;
         activity = (RootActivity) mCtx;
     }
 
-
-
-
-
     @Override
-    public NewArrivalProductsAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public SubscriptionsAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(mCtx);
-        View view = inflater.inflate(R.layout.layout_product, null);
+        View view = inflater.inflate(R.layout.layout_subscription_item, null);
+
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        final Product product = productList.get(position);
 
-        //loading the image
+        final Product product = productList.get(position);
         Glide.with(mCtx)
                 .load(product.getImage())
                 .into(holder.imageView);
-
         holder.textViewTitle.setText(product.getProductName());
         holder.textViewBy.setText(product.getSellerName());
         holder.textViewPrice.setText(String.valueOf(product.getPrice()));
@@ -66,9 +61,8 @@ public class NewArrivalProductsAdapter extends RecyclerView.Adapter<NewArrivalPr
             public void onGlobalLayout() {
                 ViewTreeObserver obs = holder.textViewTitle.getViewTreeObserver();
                 obs.removeGlobalOnLayoutListener(this);
-                Log.d("how", String.valueOf(holder.textViewTitle.getLineCount()));
                 if(holder.textViewTitle.getLineCount() > 2){
-                    Log.d("what","Line["+holder.textViewTitle.getLineCount()+"]"+holder.textViewTitle.getText());
+                    Log.d("","Line["+holder.textViewTitle.getLineCount()+"]"+holder.textViewTitle.getText());
                     int lineEndIndex = holder.textViewTitle.getLayout().getLineEnd(1);
                     String text = holder.textViewTitle.getText().subSequence(0, lineEndIndex-3)+"...";
                     holder.textViewTitle.setText(text);
@@ -77,10 +71,10 @@ public class NewArrivalProductsAdapter extends RecyclerView.Adapter<NewArrivalPr
 
             }
         });
-        holder.imageView.setOnClickListener(new View.OnClickListener() {
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                view.setPadding(24,24,24,24);
                 Fragment fragment = null;
                 Class fragmentClass = null;
                 fragmentClass = ProductPageFragment.class;
@@ -98,8 +92,9 @@ public class NewArrivalProductsAdapter extends RecyclerView.Adapter<NewArrivalPr
             }
         });
 
-//        holder.textViewPrice.setText(String.valueOf(product.getPrice()));
+
     }
+
 
     @Override
     public int getItemCount() {
@@ -114,10 +109,10 @@ public class NewArrivalProductsAdapter extends RecyclerView.Adapter<NewArrivalPr
         public ViewHolder(final View itemView) {
             super(itemView);
 
-            textViewTitle = itemView.findViewById(R.id.textViewTitle);
-            textViewPrice = itemView.findViewById(R.id.textViewPrice);
-            textViewBy = itemView.findViewById(R.id.textViewBy);
-            imageView = itemView.findViewById(R.id.imageView);
+            textViewTitle = itemView.findViewById(R.id.product_name);
+            textViewPrice = itemView.findViewById(R.id.product_price);
+            textViewBy = itemView.findViewById(R.id.product_sellername);
+            imageView = itemView.findViewById(R.id.product_image);
         }
     }
 }

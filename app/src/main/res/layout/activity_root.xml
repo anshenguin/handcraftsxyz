@@ -139,6 +139,7 @@
                     android:layout_height="wrap_content"
                     android:text="Subscriptions"
                     android:textColor="#000"
+                    android:id="@+id/subscriptions"
                     android:padding="16dp"
                     android:textSize="20sp" />
 

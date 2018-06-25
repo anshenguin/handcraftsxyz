@@ -24,11 +24,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.kinitoapps.handcraftsxyz.adapters.SubscriptionsAdapter;
 import com.kinitoapps.handcraftsxyz.fragments.AllPurposeProductListFragment;
 import com.kinitoapps.handcraftsxyz.fragments.HomeFragment;
 import com.kinitoapps.handcraftsxyz.fragments.ProductPageFragment;
 import com.kinitoapps.handcraftsxyz.R;
 import com.kinitoapps.handcraftsxyz.fragments.StorePageFragment;
+import com.kinitoapps.handcraftsxyz.fragments.SubscriptionsFragment;
 import com.kinitoapps.handcraftsxyz.fragments.shop_by_categoryFragment;
 import com.kinitoapps.handcraftsxyz.helper.SQLiteHandler;
 import com.kinitoapps.handcraftsxyz.helper.SessionManager;
@@ -40,7 +42,8 @@ import static com.bumptech.glide.Glide.with;
 
 public class RootActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, HomeFragment.OnFragmentInteractionListener,shop_by_categoryFragment.OnFragmentInteractionListener,
-        ProductPageFragment.OnFragmentInteractionListener, StorePageFragment.OnFragmentInteractionListener, AllPurposeProductListFragment.OnFragmentInteractionListener {
+        ProductPageFragment.OnFragmentInteractionListener, StorePageFragment.OnFragmentInteractionListener,
+        AllPurposeProductListFragment.OnFragmentInteractionListener, SubscriptionsFragment.OnFragmentInteractionListener {
 //    private static final String URL_PRODUCTS ="http://handicraft-com.stackstaging.com/myapi/api.php";
 //    ImageView tile1,tile2,tile3,tile4,tile5,tile6,tile7,tile8;
     int selected;
@@ -68,6 +71,7 @@ public class RootActivity extends AppCompatActivity
         loggedinoptions = findViewById(R.id.drawer_loggedin_options);
         TextView new_arrivals_text = findViewById(R.id.new_arrivals_text);
         TextView discover_text = findViewById(R.id.discover_text);
+        TextView subscriptions_text = findViewById(R.id.subscriptions);
         signup = findViewById(R.id.signup);
         bannername = findViewById(R.id.banner_name);
         signup.setOnClickListener(new View.OnClickListener() {
@@ -119,6 +123,16 @@ public class RootActivity extends AppCompatActivity
             @Override
             public void onClick(View view) {
                 selected = 4;
+                if (drawer.isDrawerOpen(GravityCompat.START)) {
+                    mDrawerItemClicked = true;
+                    drawer.closeDrawer(GravityCompat.START);
+                }
+            }
+        });
+        subscriptions_text.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                selected = 7;
                 if (drawer.isDrawerOpen(GravityCompat.START)) {
                     mDrawerItemClicked = true;
                     drawer.closeDrawer(GravityCompat.START);
@@ -196,6 +210,16 @@ public class RootActivity extends AppCompatActivity
 
                     else if(selected == 4){
                         startActivityForResult(new Intent(RootActivity.this,DiscoverActivity.class),1);
+                    }
+                    else if(selected == 7){
+                        fragmentClass = SubscriptionsFragment.class;
+                        try {
+                            fragment = (Fragment) fragmentClass.newInstance();
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        FragmentManager fragmentManager = getSupportFragmentManager();
+                        fragmentManager.beginTransaction().setCustomAnimations(R.anim.enter_from_left,R.anim.exit_to_left).replace(R.id.main_content, fragment, "subscriptions").addToBackStack("subscriptions").commit();
                     }
 
                     mDrawerItemClicked = false;

@@ -14,33 +14,33 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="16dp"
         android:layout_marginTop="8dp"
-        android:text="Product whcal lke a knife ont care but when u come clo"
+        android:text="Lorem Ipsum"
         android:textSize="16sp"
         android:id="@+id/product_name"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintLeft_toRightOf="@id/product_image"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginLeft="16dp"
         android:text="test text"
+        android:maxLines="1"
+        android:ellipsize="end"
         android:id="@+id/product_sellername"
         app:layout_constraintLeft_toRightOf="@id/product_image"
         app:layout_constraintTop_toBottomOf="@id/product_name"/>
 
     <TextView
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginLeft="16dp"
         android:text="21000"
+        android:id="@+id/product_price"
         android:textSize="16sp"
         app:layout_constraintLeft_toRightOf="@id/product_image"
         app:layout_constraintTop_toBottomOf="@id/product_sellername"/>
