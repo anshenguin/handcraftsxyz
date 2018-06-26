@@ -39,7 +39,7 @@ public class SubscriptionsAdapter extends RecyclerView.Adapter<SubscriptionsAdap
     @Override
     public SubscriptionsAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(mCtx);
-        View view = inflater.inflate(R.layout.layout_subscription_item, null);
+        View view = inflater.inflate(R.layout.layout_subscription_item, parent,false);
 
         return new ViewHolder(view);
     }
@@ -55,20 +55,21 @@ public class SubscriptionsAdapter extends RecyclerView.Adapter<SubscriptionsAdap
         holder.textViewBy.setText(product.getSellerName());
         holder.textViewPrice.setText(String.valueOf(product.getPrice()));
         ViewTreeObserver vto = holder.textViewTitle.getViewTreeObserver();
-        vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-
+        vto.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
             @Override
-            public void onGlobalLayout() {
+            public boolean onPreDraw() {
                 ViewTreeObserver obs = holder.textViewTitle.getViewTreeObserver();
-                obs.removeGlobalOnLayoutListener(this);
+                obs.removeOnPreDrawListener(this);
+                Log.d("how", String.valueOf(holder.textViewTitle.getLineCount()));
                 if(holder.textViewTitle.getLineCount() > 2){
-                    Log.d("","Line["+holder.textViewTitle.getLineCount()+"]"+holder.textViewTitle.getText());
+                    Log.d("what","Line["+holder.textViewTitle.getLineCount()+"]"+holder.textViewTitle.getText());
                     int lineEndIndex = holder.textViewTitle.getLayout().getLineEnd(1);
                     String text = holder.textViewTitle.getText().subSequence(0, lineEndIndex-3)+"...";
                     holder.textViewTitle.setText(text);
                     Log.d("","NewText:"+text);
                 }
 
+                return true;
             }
         });
 

@@ -43,7 +43,7 @@ public class NewArrivalProductsAdapter extends RecyclerView.Adapter<NewArrivalPr
     @Override
     public NewArrivalProductsAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(mCtx);
-        View view = inflater.inflate(R.layout.layout_product, null);
+        View view = inflater.inflate(R.layout.layout_product, parent,false);
         return new ViewHolder(view);
     }
 
@@ -60,12 +60,11 @@ public class NewArrivalProductsAdapter extends RecyclerView.Adapter<NewArrivalPr
         holder.textViewBy.setText(product.getSellerName());
         holder.textViewPrice.setText(String.valueOf(product.getPrice()));
         ViewTreeObserver vto = holder.textViewTitle.getViewTreeObserver();
-        vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-
+        vto.addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
             @Override
-            public void onGlobalLayout() {
+            public boolean onPreDraw() {
                 ViewTreeObserver obs = holder.textViewTitle.getViewTreeObserver();
-                obs.removeGlobalOnLayoutListener(this);
+                obs.removeOnPreDrawListener(this);
                 Log.d("how", String.valueOf(holder.textViewTitle.getLineCount()));
                 if(holder.textViewTitle.getLineCount() > 2){
                     Log.d("what","Line["+holder.textViewTitle.getLineCount()+"]"+holder.textViewTitle.getText());
@@ -75,6 +74,7 @@ public class NewArrivalProductsAdapter extends RecyclerView.Adapter<NewArrivalPr
                     Log.d("","NewText:"+text);
                 }
 
+                return true;
             }
         });
         holder.imageView.setOnClickListener(new View.OnClickListener() {
@@ -100,6 +100,8 @@ public class NewArrivalProductsAdapter extends RecyclerView.Adapter<NewArrivalPr
 
 //        holder.textViewPrice.setText(String.valueOf(product.getPrice()));
     }
+
+
 
     @Override
     public int getItemCount() {

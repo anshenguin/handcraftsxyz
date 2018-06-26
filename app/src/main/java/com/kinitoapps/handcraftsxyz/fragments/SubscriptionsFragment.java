@@ -104,6 +104,7 @@ public class SubscriptionsFragment extends Fragment {
         SQLiteHandler db = new SQLiteHandler(getContext());
         DividerItemDecoration itemDecor = new DividerItemDecoration(getContext(),DividerItemDecoration.VERTICAL);
         recyclerView.addItemDecoration(itemDecor);
+
         SessionManager session = new SessionManager(getContext());
         if(session.isLoggedIn())
         subscribedList(db.getUserDetails().get("email"));
